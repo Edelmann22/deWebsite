@@ -208,7 +208,7 @@ export default function CalendarGrid({
                               e.stopPropagation()
                               if (showClassTitles && c.title) onClassClick(c)
                             }}
-                            className={`rounded-md px-2 py-1 text-[11px] font-medium shadow-sm hover:opacity-90 ${
+                            className={`rounded-sm sm:rounded-md px-2 py-1 text-[11px] font-medium shadow-sm hover:opacity-90 ${
                               showClassTitles && c.title ? "truncate cursor-pointer" : "min-h-5"
                             }`}
                             style={{
@@ -225,15 +225,18 @@ export default function CalendarGrid({
                               <span className="flex items-center gap-1">
                                 {c.online && <Laptop size={11} className="shrink-0 opacity-80" />}
                                 <span className="truncate">
-                                  <span className="opacity-80">
-                                    {c.start_time.slice(0, 5)}–{c.end_time.slice(0, 5)}
-                                  </span>{" "}
-                                  {c.title}
+                                  <span className="sm:hidden">{c.title}</span>
+                                  <span className="hidden sm:inline">
+                                    <span className="opacity-80">
+                                      {c.start_time.slice(0, 5)}–{c.end_time.slice(0, 5)}
+                                    </span>{" "}
+                                    {c.title}
+                                  </span>
                                 </span>
                               </span>
                             ) : (
                               <span className="flex items-center justify-center">
-                                {c.online ? <Laptop size={11} /> : <span className="block h-3 w-5 rounded-full bg-current/25" />}
+                                {c.online ? <Laptop size={11} /> : <span className="block h-3 w-5 rounded-sm bg-current/25" />}
                               </span>
                             )}
                           </div>

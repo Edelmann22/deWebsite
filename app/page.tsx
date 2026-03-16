@@ -1,15 +1,18 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { GraduationCap, Plus, Loader2, CalendarDays } from "lucide-react"
 import CalendarGrid from "@/components/calendar-grid"
 import ClassDetailPanel from "@/components/class-detail-panel"
 import RawCreateClassModal from "@/components/create-class-modal"
 import UpcomingClasses from "@/components/upcoming-classes"
-import AuthPanel from "@/components/auth-panel"
+import EventList from "@/components/event-list"
+import LandingPage from "@/components/landing-page"
 import { useClasses } from "@/hooks/use-classes"
 import { useSession } from "@/hooks/use-session"
 import { useStudents } from "@/hooks/use-students"
+import { useEvents } from "@/hooks/use-events"
 import type { ClassRow } from "@/lib/db"
 import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
 
@@ -24,13 +27,15 @@ export default function HomePage() {
   const [selectedClass, setSelectedClass] = useState<ClassRow | null>(null)
   const [createDate, setCreateDate] = useState<string | null>(null)
   const [createTime, setCreateTime] = useState<string | null>(null)
-  const { user, loading: sessionLoading, login, signup, logout } = useSession()
+  const router = useRouter()
+  const { user, loading: sessionLoading, logout } = useSession()
   const t = translations[language]
   const locale = LANGUAGE_META[language].locale
   const isAdmin = user?.role === "admin"
   const isStudent = user?.role === "student"
   const isGuest = !user && guestMode
   const { students } = useStudents(isAdmin)
+  const { events, loading: eventsLoading, deleteEvent } = useEvents(!sessionLoading)
 
   useEffect(() => {
     const savedLanguage = window.localStorage.getItem("ui-language")
@@ -86,6 +91,21 @@ export default function HomePage() {
       d.setDate(d.getDate() + 7)
       return d
     })
+  }
+
+  if (!sessionLoading && !user && !isGuest) {
+    return (
+      <LandingPage
+        language={language}
+        onLanguageChange={(value) => setLanguage(value)}
+        t={t}
+        locale={locale}
+        events={events}
+        eventsLoading={eventsLoading}
+        onGetStarted={() => router.push("/auth")}
+        onLogin={() => router.push("/auth")}
+      />
+    )
   }
 
   return (
@@ -165,45 +185,39 @@ export default function HomePage() {
                 {t.logout}
               </button>
             )}
-            {isAdmin && (
-              <button
-                onClick={() => {
-                  const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(
-                    currentDate.getDate(),
-                  ).padStart(2, "0")}`
-                  setCreateDate(dateStr)
-                  setCreateTime(null)
-                }}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition shadow-sm"
-              >
-                <Plus size={15} />
-                <span className="hidden sm:inline">{t.newClass}</span>
-              </button>
+          {isAdmin && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => router.push("/events/new")}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card text-foreground text-sm font-semibold hover:bg-secondary transition"
+                >
+                  <CalendarDays size={15} />
+                  <span className="hidden sm:inline">{t.newEvent}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(
+                      currentDate.getDate(),
+                    ).padStart(2, "0")}`
+                    setCreateDate(dateStr)
+                    setCreateTime(null)
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition shadow-sm"
+                >
+                  <Plus size={15} />
+                  <span className="hidden sm:inline">{t.newClass}</span>
+                </button>
+              </div>
             )}
           </div>
         </div>
       </header>
 
       {/* Main */}
-      <main className={`max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8 ${isAdmin ? "lg:flex-row" : ""}`}>
+      <main className={`max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8 ${isAdmin || isStudent ? "lg:flex-row" : ""}`}>
         {sessionLoading ? (
           <section className="flex w-full justify-center py-16">
             <Loader2 size={24} className="animate-spin text-muted-foreground" />
-          </section>
-        ) : !user && !isGuest ? (
-          <section className="w-full py-8">
-            <AuthPanel
-              t={t}
-              onLogin={async (email, password) => {
-                setGuestMode(false)
-                await login(email, password)
-              }}
-              onSignup={async (email, nickname, password) => {
-                setGuestMode(false)
-                await signup(email, nickname, password)
-              }}
-              onGuest={() => setGuestMode(true)}
-            />
           </section>
         ) : (
           <>
@@ -275,7 +289,7 @@ export default function HomePage() {
 
         {/* Sidebar */}
         {(isAdmin || isStudent) && (
-        <aside className={`w-full shrink-0 flex flex-col gap-6 ${isAdmin ? "lg:w-72 xl:w-80" : ""}`}>
+        <aside className={`w-full shrink-0 flex flex-col gap-6 ${isAdmin || isStudent ? "lg:w-72 xl:w-80" : ""}`}>
           {/* Stats */}
           {isAdmin && (
             <div className="grid grid-cols-2 gap-3">
@@ -311,6 +325,26 @@ export default function HomePage() {
             onClassClick={(cls) => setSelectedClass(cls)}
             title={isAdmin ? t.upcoming : t.myClasses}
             locale={locale}
+          />
+
+          <EventList
+            events={events}
+            loading={eventsLoading}
+            locale={locale}
+            isAdmin={isAdmin}
+            onDelete={async (id) => {
+              const ok = window.confirm(t.deleteEventConfirm)
+              if (!ok) return
+              await deleteEvent(id)
+            }}
+            labels={{
+              title: t.eventsTitle,
+              subtitle: t.eventsSubtitle,
+              empty: t.eventsEmpty,
+              loading: t.eventsLoading,
+              edit: t.editEvent,
+              remove: t.deleteEvent,
+            }}
           />
 
           {/* Empty state */}

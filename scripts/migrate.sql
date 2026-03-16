@@ -55,6 +55,18 @@ CREATE TABLE IF NOT EXISTS user_sessions (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Events table
+CREATE TABLE IF NOT EXISTS events (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  content_html TEXT NOT NULL DEFAULT '',
+  images TEXT[] NOT NULL DEFAULT '{}',
+  event_date DATE,
+  created_by_user_id INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 DO $$
 BEGIN
   IF NOT EXISTS (
@@ -86,3 +98,18 @@ END $$;
 -- Index for fast month-range queries
 CREATE INDEX IF NOT EXISTS idx_classes_date ON classes (date);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_token_hash ON user_sessions (token_hash);
+CREATE INDEX IF NOT EXISTS idx_events_event_date ON events (event_date);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM information_schema.table_constraints
+    WHERE constraint_name = 'events_created_by_user_id_fkey'
+      AND table_name = 'events'
+  ) THEN
+    ALTER TABLE events
+    ADD CONSTRAINT events_created_by_user_id_fkey
+    FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
+  END IF;
+END $$;

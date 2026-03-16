@@ -103,7 +103,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
       ...draft,
       title: selectedStudentName,
     })
-    setSaving(false)
+    setSaving(false)         
     setEditing(false)
   }
 
@@ -128,7 +128,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               backgroundImage: `radial-gradient(circle at top left, ${normalizeClassColor(current.color)}33, transparent 50%), radial-gradient(circle at top right, rgba(255,255,255,0.65), transparent 45%)`,
             }}
           />
-          <div className="relative flex items-start gap-4 p-6 pb-5">
+          <div className="relative flex flex-col gap-4 p-6 pb-5 sm:flex-row sm:items-start">
             <div className="min-w-0 flex-1">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary shadow-sm">
@@ -166,11 +166,13 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
                 {t.detailsIntro}
               </p>
             </div>
-
-            <div className="flex shrink-0 items-center gap-2">
+            
+            {/* Button for closing the panel */}
+            <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
               <button
                 onClick={onClose}
-                className="rounded-xl border border-white/70 bg-white/70 p-2 text-muted-foreground shadow-sm transition hover:bg-white hover:text-foreground"
+                className="rounded-xl border border-border/70 bg-card/90 p-2 text-muted-foreground shadow-sm transition hover:bg-white hover:text-foreground"
+                aria-label="Close details"
               >
                 <X size={16} />
               </button>
@@ -228,7 +230,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-b border-border/70 px-6 py-4">
+        <div className="flex flex-col gap-3 border-b border-border/70 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
             <CalendarDays size={15} className="text-primary" />
             {editing && canEdit ? (
@@ -243,7 +245,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
             )}
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             {canEdit && editing ? (
               <>
                 <button
