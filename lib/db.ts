@@ -46,3 +46,14 @@ export type EventRow = {
   created_at: string
   updated_at: string
 }
+
+export type ReviewRow = {
+  id: number
+  user_id: number
+  username: string
+  rating: number
+  comment: string
+  course: string
+  created_at: string
+  updated_at: string
+}

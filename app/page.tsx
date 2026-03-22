@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { GraduationCap, Plus, Loader2, CalendarDays } from "lucide-react"
+import Image from "next/image"
+import { Plus, Loader2, CalendarDays, MessageSquare } from "lucide-react"
 import CalendarGrid from "@/components/calendar-grid"
 import ClassDetailPanel from "@/components/class-detail-panel"
 import RawCreateClassModal from "@/components/create-class-modal"
 import UpcomingClasses from "@/components/upcoming-classes"
 import EventList from "@/components/event-list"
-import LandingPage from "@/components/landing-page"
+import EventDetailModal from "@/components/event-detail-modal"
+import LandingPage from "@/components/landing-page-new"
 import { useClasses } from "@/hooks/use-classes"
 import { useSession } from "@/hooks/use-session"
 import { useStudents } from "@/hooks/use-students"
 import { useEvents } from "@/hooks/use-events"
-import type { ClassRow } from "@/lib/db"
+import { useLanguage } from "@/hooks/use-language"
+import type { ClassRow, EventRow } from "@/lib/db"
 import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
 
 const CreateClassModal: any = RawCreateClassModal
@@ -21,10 +24,14 @@ const PAGE_BACKGROUND_IMAGE = ""
 
 export default function HomePage() {
   const now = new Date()
-  const [language, setLanguage] = useState<Language>("en")
-  const [guestMode, setGuestMode] = useState(false)
+  const { language, setLanguage } = useLanguage()
+  const [guestMode, setGuestMode] = useState(() => {
+    if (typeof window === "undefined") return false
+    return window.localStorage.getItem("guest-mode") === "true"
+  })
   const [currentDate, setCurrentDate] = useState(now)
   const [selectedClass, setSelectedClass] = useState<ClassRow | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null)
   const [createDate, setCreateDate] = useState<string | null>(null)
   const [createTime, setCreateTime] = useState<string | null>(null)
   const router = useRouter()
@@ -35,19 +42,18 @@ export default function HomePage() {
   const isStudent = user?.role === "student"
   const isGuest = !user && guestMode
   const { students } = useStudents(isAdmin)
-  const { events, loading: eventsLoading, deleteEvent } = useEvents(!sessionLoading)
+  const { events, loading: eventsLoading, deleteEvent } = useEvents(true, 6) // Always enable events, limit to 6 for landing page
+
+  console.log("Main page events:", events?.length, events, "loading:", eventsLoading, "sessionLoading:", sessionLoading)
+
+  // Add useEffect to monitor events changes
+  useEffect(() => {
+    console.log("Events changed in useEffect:", events?.length, events)
+  }, [events])
 
   useEffect(() => {
-    const savedLanguage = window.localStorage.getItem("ui-language")
-    if (savedLanguage === "en" || savedLanguage === "de" || savedLanguage === "bg") {
-      setLanguage(savedLanguage)
-    }
     setGuestMode(window.localStorage.getItem("guest-mode") === "true")
   }, [])
-
-  useEffect(() => {
-    window.localStorage.setItem("ui-language", language)
-  }, [language])
 
   useEffect(() => {
     window.localStorage.setItem("guest-mode", guestMode ? "true" : "false")
@@ -93,6 +99,24 @@ export default function HomePage() {
     })
   }
 
+  const handleContinueAsGuest = () => {
+    setGuestMode(true)
+  }
+
+  const handleViewEventDetails = (eventId: number) => {
+    if (eventId === -1) {
+      // Show all events - for now, just open the first event or show a message
+      if (events.length > 0) {
+        setSelectedEvent(events[0])
+      }
+    } else {
+      const event = events.find(e => e.id === eventId)
+      if (event) {
+        setSelectedEvent(event)
+      }
+    }
+  }
+
   if (!sessionLoading && !user && !isGuest) {
     return (
       <LandingPage
@@ -102,8 +126,12 @@ export default function HomePage() {
         locale={locale}
         events={events}
         eventsLoading={eventsLoading}
-        onGetStarted={() => router.push("/auth")}
+        isAuthenticated={Boolean(user)}
+        isAdmin={isAdmin}
+        user={user}
         onLogin={() => router.push("/auth")}
+        onContinueAsGuest={handleContinueAsGuest}
+        onViewEventDetails={handleViewEventDetails}
       />
     )
   }
@@ -128,12 +156,15 @@ export default function HomePage() {
       {/* Top Nav */}
       <header className="sticky top-0 z-40 border-b border-border bg-card/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
-              <GraduationCap size={16} className="text-primary-foreground" />
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white shadow-sm">
+              <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={24} height={24} />
             </div>
             <span className="font-bold text-lg text-foreground tracking-tight">{t.appName}</span>
-          </div>
+          </button>
 
           <div className="flex items-center gap-2">
             <a href="#" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-primary bg-brand-light">
@@ -193,6 +224,13 @@ export default function HomePage() {
                 >
                   <CalendarDays size={15} />
                   <span className="hidden sm:inline">{t.newEvent}</span>
+                </button>
+                <button
+                  onClick={() => router.push("/reviews")}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-primary-foreground text-sm font-semibold hover:opacity-90 transition shadow-sm"
+                >
+                  <MessageSquare size={15} />
+                  <span className="hidden sm:inline">{t.leaveReview}</span>
                 </button>
                 <button
                   onClick={() => {
@@ -347,6 +385,22 @@ export default function HomePage() {
             }}
           />
 
+          {/* Leave Review Button */}
+          {(isAdmin || isStudent) && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <button
+                onClick={() => router.push("/reviews")}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <MessageSquare size={16} />
+                {isAdmin ? "Manage Reviews" : t.leaveReview}
+              </button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                {isAdmin ? "View and manage student reviews" : "Share your learning experience"}
+              </p>
+            </div>
+          )}
+
           {/* Empty state */}
           {!loading && studentClasses.length === 0 && (
             <div className="bg-card border border-dashed border-border rounded-xl p-6 flex flex-col items-center gap-3 text-center">
@@ -421,10 +475,20 @@ export default function HomePage() {
                 Open in Google Maps
               </a>
             </div>
+
           </div>
         </div>
       </footer>
       </div>
+
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <EventDetailModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          locale={locale}
+        />
+      )}
     </div>
   )
 }

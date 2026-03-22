@@ -1,0 +1,63 @@
+Plan for the DUD Website 
+
+1) Landing page
+ - The first thing the user sees. Beautiful pictures and easy to navigate menu. 
+ WHAT SHOULD A CLEAR LANDING PAGE HAVE???
+ * The client comes for a few thing to a website:
+   Acquiring info
+   Making purchases 
+   Seeking entertainment
+   Connecting with others 
+
+ So, the most common reason to view the website is because somebody wants to learn German. Why would somebody want to learn German - 
+    significant advantages in business, travel, cultural appreciation, other many reasons...
+
+    So, "LEARN GERMAN", "WHY LEARN GERMAN"
+
+ People look for language excursions - We offer this, organization through Integral
+ People look for certificates - We offer Test DaF Vorbereitung
+ People look for good prices - We offer small groups 2-4 
+ People look for structure and results - People can come and test their skils, the learning speed is aligned with the students, because the groups are small
+ People look for teacher quality - What has the teacher achieved, what certificates does the teacher have, experience...
+ People look for speaking quality - so they can practise speaking 
+ People look for flexible and clear schedule 
+ People look for clear offers and prices 
+ 
+ The website is going to be a modern platform, which tracks past and future lessons 
+ There can be a reviews page with comments from students WITH profiles
+
+
+ ---SIGN UP/IN PAGE---
+
+ Beautiful style, when signing up for an account the admin account should accept or decline the new account. Until then the user with the pending account waits. 
+ - Log in
+ - Sign up
+ - Continue as a guest
+
+ ---ADMIN ACCOUNT---
+ The admin account can edit, view and do the following things: 
+ - Edit fully the calendar. The calendar has a default weekly schedule, which only when edited changes for the future. So it's as easiest as possible. 
+ - The admin can deactivate, edit, add and remove events/classes from the calendar. 
+ - The name (accounts) of the students can be selected for the lessons. Personalization of the calendar with a color palette. 
+ - Adding events in a calendar:
+  * Student account
+  * Date 
+  * Start time - End time in format 0-24h. European
+  * Online or in-person 
+  * Small palette with an example of the calendar view 
+
+  * Labeling an event in the calendar view 
+
+  * Deactivating days of the calendar
+
+  Adding an event: 
+  * Event title
+  * Event date (optional)
+  * Event description - with files, images...
+  - Editing an event
+
+  When posting an event it should be posted in the social networks of the course. 
+
+ ---STUDENT ACCOUNT---
+ The students can view the whole calendar, events and soon maybe play language games.   
+ 

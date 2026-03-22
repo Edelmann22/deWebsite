@@ -10,7 +10,7 @@ import {
 import { LANGUAGE_META, type Language } from "@/lib/i18n"
 
 const DAY_START_MINUTES = 6 * 60  // 06:00
-const DAY_END_MINUTES   = 21 * 60 // 21:00
+const DAY_END_MINUTES   = 22 * 60 // 22:00
 
 function toLocalDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2,"0")}-${String(day).padStart(2,"0")}`
@@ -89,6 +89,8 @@ export default function CalendarGrid({
   for (let h = DAY_START_MINUTES; h <= DAY_END_MINUTES; h += 60) {
     rawMarkers.add(h)
   }
+  // Add an extra marker after the end time to create the final segment
+  rawMarkers.add(DAY_END_MINUTES + 60)
   for (const c of classes) {
     const start = Math.max(DAY_START_MINUTES, timeToMinutes(c.start_time))
     const end = Math.min(DAY_END_MINUTES, timeToMinutes(c.end_time))
@@ -217,7 +219,7 @@ export default function CalendarGrid({
                             }}
                             title={
                               showClassTitles && c.title
-                                ? `${c.title} (${c.start_time.slice(0,5)}–${c.end_time.slice(0,5)})`
+                                ? c.title
                                 : undefined
                             }
                           >
@@ -226,12 +228,7 @@ export default function CalendarGrid({
                                 {c.online && <Laptop size={11} className="shrink-0 opacity-80" />}
                                 <span className="truncate">
                                   <span className="sm:hidden">{c.title}</span>
-                                  <span className="hidden sm:inline">
-                                    <span className="opacity-80">
-                                      {c.start_time.slice(0, 5)}–{c.end_time.slice(0, 5)}
-                                    </span>{" "}
-                                    {c.title}
-                                  </span>
+                                  <span className="hidden sm:inline">{c.title}</span>
                                 </span>
                               </span>
                             ) : (

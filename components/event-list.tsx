@@ -27,6 +27,30 @@ function formatEventDate(value: string, locale: string) {
   })
 }
 
+function formatCreatedDate(value: string, locale: string) {
+  const date = new Date(value)
+  const now = new Date()
+  const diffTime = Math.abs(now.getTime() - date.getTime())
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+  
+  if (diffDays === 0) {
+    return "Today"
+  } else if (diffDays === 1) {
+    return "Yesterday"
+  } else if (diffDays < 7) {
+    return `${diffDays} days ago`
+  } else if (diffDays < 30) {
+    const weeks = Math.floor(diffDays / 7)
+    return `${weeks} week${weeks > 1 ? 's' : ''} ago`
+  } else {
+    return date.toLocaleDateString(locale, {
+      month: "short",
+      day: "numeric",
+      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+    })
+  }
+}
+
 function eventPreview(html: string, wordLimit = 16) {
   if (!html) return ""
   const doc = new DOMParser().parseFromString(html, "text/html")
@@ -38,6 +62,8 @@ function eventPreview(html: string, wordLimit = 16) {
 }
 
 export default function EventList({ events, locale, loading, isAdmin, onDelete, labels }: Props) {
+  console.log("EventList rendered with events:", events?.length, "loading:", loading, "isAdmin:", isAdmin)
+  
   const resolved = labels ?? {
     title: "Events",
     subtitle: "News, announcements, and special dates.",
@@ -62,23 +88,30 @@ export default function EventList({ events, locale, loading, isAdmin, onDelete, 
         </div>
       )}
 
-      {!loading && events.length === 0 && (
+      {!loading && (events || []).length === 0 && (
         <div className="rounded-2xl border border-dashed border-border bg-card p-4 text-sm text-muted-foreground">
           {resolved.empty}
         </div>
       )}
 
-      {events.map((event) => (
+      {(events || [])
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map((event) => (
         <article key={event.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h3 className="text-lg font-semibold text-foreground">{event.title}</h3>
-              {event.event_date && (
-                <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                  <CalendarDays size={14} />
-                  <span>{formatEventDate(event.event_date, locale)}</span>
+              <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                {event.event_date && (
+                  <div className="flex items-center gap-1">
+                    <CalendarDays size={14} />
+                    <span>{formatEventDate(event.event_date, locale)}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <span>Posted {formatCreatedDate(event.created_at, locale)}</span>
                 </div>
-              )}
+              </div>
             </div>
             {isAdmin && (
               <div className="flex items-center gap-2">

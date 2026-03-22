@@ -3,24 +3,65 @@ import sql from "@/lib/db"
 import { getCurrentUser, requireRole } from "@/lib/auth"
 
 // GET /api/events
-export async function GET(_req: NextRequest) {
+export async function GET(req: NextRequest) {
   await getCurrentUser()
 
-  const rows = await sql`
-    SELECT
-      id,
-      title,
-      content_html,
-      images,
-      event_date::text AS event_date,
-      created_by_user_id,
-      created_at,
-      updated_at
-    FROM events
-    ORDER BY event_date DESC NULLS LAST, created_at DESC
-  `
+  const { searchParams } = new URL(req.url)
+  const limit = searchParams.get('limit')
+  const limitNum = limit ? parseInt(limit, 10) : null
 
-  return NextResponse.json(rows)
+  console.log("API GET /api/events called with limit:", limitNum)
+
+  // Add response headers for caching
+  const headers = new Headers({
+    'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+    'Content-Type': 'application/json'
+  })
+
+  try {
+    let query = sql`
+      SELECT
+        id,
+        title,
+        content_html,
+        images,
+        event_date::text AS event_date,
+        created_by_user_id,
+        created_at,
+        updated_at
+      FROM events
+      ORDER BY created_at DESC
+    `
+
+    // Add limit if specified (for landing page performance)
+    if (limitNum && limitNum > 0) {
+      query = sql`
+        SELECT
+          id,
+          title,
+          content_html,
+          images,
+          event_date::text AS event_date,
+          created_by_user_id,
+          created_at,
+          updated_at
+        FROM events
+        ORDER BY created_at DESC
+        LIMIT ${limitNum}
+      `
+    }
+
+    const rows = await query
+    console.log("Database query returned rows:", rows?.length)
+
+    return NextResponse.json(rows, { headers })
+  } catch (error) {
+    console.error('Database error in GET /api/events:', error)
+    return NextResponse.json(
+      { error: "Failed to fetch events" }, 
+      { status: 500, headers }
+    )
+  }
 }
 
 // POST /api/events
