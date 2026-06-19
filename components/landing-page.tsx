@@ -3,7 +3,7 @@
 import type { EventRow } from "@/lib/db"
 import Image from "next/image"
 import { LANGUAGE_META, type Language, type TranslationDictionary } from "@/lib/i18n"
-import { ChevronRight, Sparkles, Users, Briefcase, Newspaper, Megaphone, Rocket, Star } from "lucide-react"
+import { CalendarDays, ChevronRight, Sparkles, Users, Briefcase, Newspaper, Megaphone, Rocket, Star } from "lucide-react"
 
 type Offer = { title: string; body: string; icon: React.ReactNode }
 type NewsItem = { title: string; body: string; icon: React.ReactNode }
@@ -165,7 +165,7 @@ export default function LandingPage({
                 <p className="mt-2 text-sm text-muted-foreground">{t.offersSubtitle}</p>
               </div>
               <span className="hidden rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground sm:inline">
-                {t.offersBadge}
+                
               </span>
             </div>
             <div className="grid gap-4 md:grid-cols-3">

@@ -2,14 +2,14 @@
 
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { LANGUAGE_META, type Language, type TranslationDictionary } from "@/lib/i18n"
 import type { SessionUser, EventRow } from "@/lib/db"
-import { Menu, X } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { smoothScrollTo } from "@/lib/smooth-scroll"
 import HeroSection from "@/components/sections/hero-section"
-import CoursesSection from "@/components/sections/courses-section"
+import { CoursesSection } from "@/components/sections/courses-section"
 import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
 
@@ -45,6 +45,14 @@ export default function NewLandingPage({
   const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const hash = window.location.hash.replace("#", "")
+    if (!hash) return
+    // Defer to ensure sections are rendered before scrolling.
+    window.requestAnimationFrame(() => smoothScrollTo(hash))
+  }, [])
+
   const handleLearnWithUs = () => {
     smoothScrollTo("courses")
   }
@@ -57,8 +65,12 @@ export default function NewLandingPage({
     router.push("/auth")
   }
 
-  const handleEnroll = (courseId: string) => {
-    router.push("/auth")
+  const handleEnroll = (_courseId: string) => {
+    router.push("/offers")
+  }
+
+  const handleCourseOffer = (section: "group" | "individual" | "exam-prep") => {
+    router.push(`/offers#${section}`)
   }
 
   const handleViewEventDetails = (eventId: number) => {
@@ -66,9 +78,15 @@ export default function NewLandingPage({
     onViewEventDetails(eventId)
   }
 
-  const handleViewExcursions = () => {
+  const handleViewEvents = () => {
     smoothScrollTo("events")
   }
+
+  const courseDropdownItems = [
+    { label: t.offersGroupTitle, section: "group" },
+    { label: t.offersIndividualTitle, section: "individual" },
+    { label: t.offersExamPrepTitle, section: "exam-prep" },
+  ] as const
 
   return (
     <div className="min-h-screen bg-white">
@@ -89,17 +107,35 @@ export default function NewLandingPage({
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-8">
+              <div className="group relative">
+                <button
+                  type="button"
+                  onClick={handleLearnWithUs}
+                  className="inline-flex items-center gap-1.5 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                >
+                  {t.courses}
+                  <ChevronDown className="h-4 w-4 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+                </button>
+                <div className="invisible absolute left-0 top-full z-50 pt-3 opacity-0 transition group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                  <div className="w-56 rounded-lg border border-gray-200 bg-white p-2 shadow-lg">
+                    {courseDropdownItems.map((item) => (
+                      <button
+                        key={item.section}
+                        type="button"
+                        onClick={() => handleCourseOffer(item.section)}
+                        className="block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:bg-gray-50 focus:text-gray-900 focus:outline-none"
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
               <button
-                onClick={handleLearnWithUs}
+                onClick={handleViewEvents}
                 className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
-                {t.courses}
-              </button>
-              <button
-                onClick={handleViewExcursions}
-                className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
-              >
-                {t.excursions}
+                {t.events}
               </button>
               <button
                 onClick={handleWhyLearnGerman}
@@ -174,12 +210,12 @@ export default function NewLandingPage({
                 </button>
                 <button
                   onClick={() => {
-                    handleViewExcursions()
+                    handleViewEvents()
                     setMobileMenuOpen(false)
                   }}
                   className="text-left text-gray-600 hover:text-gray-900 font-medium transition-colors py-2"
                 >
-                  {t.excursions}
+                  {t.events}
                 </button>
                 <button
                   onClick={() => {
@@ -303,8 +339,8 @@ export default function NewLandingPage({
                   </button>
                 </li>
                 <li>
-                  <button onClick={handleViewExcursions} className="hover:text-white transition-colors">
-                    {t.excursions}
+                  <button onClick={handleViewEvents} className="hover:text-white transition-colors">
+                    {t.events}
                   </button>
                 </li>
                 <li>

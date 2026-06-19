@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Plus, Loader2, CalendarDays, MessageSquare } from "lucide-react"
+import { CalendarDays, Menu, X, MessageSquare, Plus, Loader2 } from "lucide-react"
 import CalendarGrid from "@/components/calendar-grid"
 import ClassDetailPanel from "@/components/class-detail-panel"
 import RawCreateClassModal from "@/components/create-class-modal"
@@ -34,6 +34,7 @@ export default function HomePage() {
   const [selectedEvent, setSelectedEvent] = useState<EventRow | null>(null)
   const [createDate, setCreateDate] = useState<string | null>(null)
   const [createTime, setCreateTime] = useState<string | null>(null)
+  const [isClient, setIsClient] = useState(false)
   const router = useRouter()
   const { user, loading: sessionLoading, logout } = useSession()
   const t = translations[language]
@@ -50,6 +51,10 @@ export default function HomePage() {
   useEffect(() => {
     console.log("Events changed in useEffect:", events?.length, events)
   }, [events])
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     setGuestMode(window.localStorage.getItem("guest-mode") === "true")
@@ -169,7 +174,7 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <a href="#" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-primary bg-brand-light">
               <CalendarDays size={14} />
-              <span className="hidden sm:inline">{t.weekView}</span>
+              {isClient && <span className="sm:inline">{t.weekView}</span>}
             </a>
             <select
               value={language}
@@ -262,8 +267,19 @@ export default function HomePage() {
 
         {/* Calendar section */}
         <section className="flex-1 min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-foreground">{t.classSchedule}</h1>
+          <div className="flex items-center justify-between mb-4 gap-3">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-foreground">{t.classSchedule}</h1>
+              {isAdmin && (
+                <button
+                  onClick={() => router.push("/admin/default-week")}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card text-foreground text-xs font-semibold hover:bg-secondary transition"
+                >
+                  <CalendarDays size={14} />
+                  <span>Default week</span>
+                </button>
+              )}
+            </div>
             {loading && <Loader2 size={18} className="animate-spin text-muted-foreground" />}
           </div>
 
@@ -405,13 +421,13 @@ export default function HomePage() {
           {!loading && studentClasses.length === 0 && (
             <div className="bg-card border border-dashed border-border rounded-xl p-6 flex flex-col items-center gap-3 text-center">
               <CalendarDays size={28} className="text-muted-foreground" />
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              {/*<p className="text-sm text-muted-foreground leading-relaxed">
                 {isAdmin ? (
                   <>{t.noClassesThisMonth}<br />{t.clickNewClass} <strong>{t.newClass}</strong> {t.orTapDay}</>
                 ) : (
                   t.noClassesThisMonth
                 )}
-              </p>
+              </p>*/}
             </div>
           )}
         </aside>

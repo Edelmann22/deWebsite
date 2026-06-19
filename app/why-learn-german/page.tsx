@@ -208,18 +208,12 @@ export default function WhyLearnGermanPage() {
         </section>
 
         {/* Call to Action */}
-        <section className="text-center bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-12 text-white">
-          <h2 className="text-3xl font-bold mb-4">
-            {t.whyGermanCtaTitle}
-          </h2>
-          <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-            {t.whyGermanCtaSubtitle}
-          </p>
+        <div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg" 
               variant="outline"
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/#courses")}
               className="bg-white text-blue-600 hover:bg-gray-100"
             >
               {t.whyGermanCtaSecondary}
@@ -233,7 +227,7 @@ export default function WhyLearnGermanPage() {
               {t.whyGermanCtaPrimary}
             </Button>
           </div>
-        </section>
+        </div>
       </main>
     </div>
   )

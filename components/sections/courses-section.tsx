@@ -4,6 +4,7 @@ import { Clock, Users, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 import type { TranslationDictionary } from "@/lib/i18n"
 
 interface Offer {
@@ -21,23 +22,45 @@ interface CoursesSectionProps {
   t: TranslationDictionary
 }
 
-export default function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
+interface CourseOffersProps
+{
+    t: TranslationDictionary
+}
+
+export default function CourseOffers({ t }: CourseOffersProps)
+{
+    const router = useRouter()
+
+    const handleEnroll = (courseId: string) => 
+    {
+        router.push(`/offers?package=${courseId}`)
+    }
+
+    return (
+        <CoursesSection
+          onEnroll={handleEnroll}
+          t={t}
+        />
+    )
+}
+
+export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
   const offers: Offer[] = [
     {
-      id: "single-lesson",
-      title: t.singleLessonTitle,
-      duration: t.singleLessonDuration,
+      id: "group-lesson",
+      title: t.groupLessonTitle,
+      duration: t.groupLessonDuration,
       price: 60,
-      description: t.singleLessonDescription,
+      description: t.groupLessonDescription,
       features: [
-        t.singleLessonFeature1,
-        t.singleLessonFeature2,
-        t.singleLessonFeature3,
-        t.singleLessonFeature4,
+        t.groupLessonFeature1,
+        t.groupLessonFeature2,
+        t.groupLessonFeature3,
+        t.groupLessonFeature4,
       ],
     },
     {
-      id: "package-10",
+      id: "individual-lesson",
       title: t.package10Title,
       duration: t.package10Duration,
       price: 300,

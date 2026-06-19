@@ -29,7 +29,7 @@ type Props = {
   [key: string]: any
 }
 const DEFAULT_LANGUAGE = "Deutsch"
-const DEFAULT_TEACHER = "Rosi Vaseva"
+// Note: language and teacher are now auto-set and not shown in the form
 
 function normalizeDateInput(value: string) {
   const match = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
@@ -45,8 +45,6 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
   const [form, setForm] = useState({
     title: students[0]?.nickname ?? "",
     student_user_id: students[0]?.id ?? 0,
-    language: DEFAULT_LANGUAGE,
-    teacher: DEFAULT_TEACHER,
     color: DEFAULT_CLASS_COLOR,
     details_background_color: DEFAULT_CLASS_DETAILS_BACKGROUND_COLOR,
     slot_color: DEFAULT_CLASS_SLOT_COLOR,
@@ -120,12 +118,19 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
     setError("")
     try {
       await onCreate({
-        ...form,
         title: students.find((student) => student.id === form.student_user_id)?.nickname ?? "",
+        student_user_id: form.student_user_id,
+        language: DEFAULT_LANGUAGE,
+        teacher: "Rosi Vaseva",
         date: safeDate,
+        start_time: form.start_time,
+        end_time: form.end_time,
         color: normalizeClassColor(form.color),
         details_background_color: normalizeClassDetailsBackgroundColor(form.details_background_color),
         slot_color: normalizeClassSlotColor(form.slot_color),
+        online: form.online,
+        homework: form.homework,
+        lesson_notes: form.lesson_notes,
       })
       onClose()
     } catch (error) {

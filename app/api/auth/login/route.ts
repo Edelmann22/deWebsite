@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const user = await findUserByEmail(email)
     if (!user || !verifyPassword(password, user.password_hash)) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+      return NextResponse.json({ error: "Wrong credentials" }, { status: 401 })
     }
 
     const token = await createSession(user.id)

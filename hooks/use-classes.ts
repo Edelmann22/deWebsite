@@ -29,7 +29,10 @@ export function useClasses(from: string, to: string, enabled = true) {
     setLoading(false)
   }, [enabled, from, to])
 
-  useEffect(() => { fetchClasses() }, [fetchClasses])
+  useEffect(() => {
+    fetchClasses()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchClasses])
 
   const createClass = async (payload: Omit<ClassRow, "id" | "created_at" | "updated_at">) => {
     const res = await fetch("/api/classes", {
