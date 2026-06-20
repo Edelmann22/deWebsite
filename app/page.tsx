@@ -45,13 +45,6 @@ export default function HomePage() {
   const { students } = useStudents(isAdmin)
   const { events, loading: eventsLoading, deleteEvent } = useEvents(true, 6) // Always enable events, limit to 6 for landing page
 
-  console.log("Main page events:", events?.length, events, "loading:", eventsLoading, "sessionLoading:", sessionLoading)
-
-  // Add useEffect to monitor events changes
-  useEffect(() => {
-    console.log("Events changed in useEffect:", events?.length, events)
-  }, [events])
-
   useEffect(() => {
     setIsClient(true)
   }, [])

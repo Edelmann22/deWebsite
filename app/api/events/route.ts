@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import sql from "@/lib/db"
-import { getCurrentUser, requireRole } from "@/lib/auth"
+import { requireRole } from "@/lib/auth"
 
 // GET /api/events
 export async function GET(req: NextRequest) {
-  await getCurrentUser()
-
   const { searchParams } = new URL(req.url)
   const limit = searchParams.get('limit')
   const limitNum = limit ? parseInt(limit, 10) : null
-
-  console.log("API GET /api/events called with limit:", limitNum)
 
   // Add response headers for caching
   const headers = new Headers({
@@ -52,14 +48,18 @@ export async function GET(req: NextRequest) {
     }
 
     const rows = await query
-    console.log("Database query returned rows:", rows?.length)
 
     return NextResponse.json(rows, { headers })
   } catch (error) {
     console.error('Database error in GET /api/events:', error)
     return NextResponse.json(
-      { error: "Failed to fetch events" }, 
-      { status: 500, headers }
+      { error: "Failed to fetch events" },
+      {
+        status: 503,
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      },
     )
   }
 }

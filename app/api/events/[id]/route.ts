@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
 import sql from "@/lib/db"
-import { getCurrentUser, requireRole } from "@/lib/auth"
+import { requireRole } from "@/lib/auth"
 
 type Params = { params: Promise<{ id: string }> }
 
 // GET /api/events/:id
 export async function GET(_req: NextRequest, { params }: Params) {
-  const user = await getCurrentUser()
-  if (!user || (user.role !== "admin" && user.role !== "student")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
   const { id } = await params
   const [row] = await sql`
     SELECT

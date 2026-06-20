@@ -18,8 +18,7 @@ export function useAllEvents(enabled = true) {
     
     try {
       const res = await fetch("/api/events", { 
-        cache: "force-cache",
-        next: { revalidate: 300 } // 5 minutes
+        cache: "no-store",
       })
       
       if (!res.ok) {

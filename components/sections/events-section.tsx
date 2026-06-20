@@ -1,6 +1,8 @@
 "use client"
 
-import { CalendarDays, MapPin, Clock, Users, ArrowRight, X } from "lucide-react"
+import { useMemo } from "react"
+import { useRouter } from "next/navigation"
+import { CalendarDays, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +18,7 @@ interface EventsSectionProps {
 }
 
 export default function EventsSection({ events, eventsLoading, onViewEventDetails, t, locale }: EventsSectionProps) {
-  console.log("EventsSection rendered with events:", events?.length, "loading:", eventsLoading)
+  const router = useRouter()
   
   // Helper function to extract text from HTML
   function extractTextFromHtml(html: string) {
@@ -35,7 +37,18 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
   }
 
   // Sort events by creation date (most recent first)
-  const sortedEvents = events.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  const sortedEvents = useMemo(
+    () => [...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()),
+    [events],
+  )
+
+  const eventPreviews = useMemo(
+    () =>
+      Object.fromEntries(
+        sortedEvents.map((event) => [event.id, extractTextFromHtml(event.content_html)]),
+      ) as Record<number, string>,
+    [sortedEvents],
+  )
 
   return (
     <section id="events" className="py-16 bg-gray-50">
@@ -61,16 +74,18 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedEvents.slice(0, 6).map((event) => (
-              <Card 
+              <Card
                 key={event.id} 
                 className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-blue-300"
-                onClick={() => onViewEventDetails(event.id)}
+                onClick={() => router.push(`/events/${event.id}`)}
               >
                 {event.images && event.images.length > 0 && (
                   <div className="aspect-video overflow-hidden bg-gray-100">
                     <img
                       src={event.images[0]}
                       alt={event.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
@@ -94,7 +109,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                 </CardHeader>
                 <CardContent className="pt-0">
                   <CardDescription className="line-clamp-3 mb-4">
-                    {extractTextFromHtml(event.content_html)}
+                    {eventPreviews[event.id]}
                   </CardDescription>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-500">
@@ -110,7 +125,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                       className="p-0 h-auto hover:text-blue-600 hover:bg-blue-50 rounded-md px-2 py-1 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
-                        onViewEventDetails(event.id)
+                        router.push(`/events/${event.id}`)
                       }}
                     >
                       <span className="flex items-center gap-1">
