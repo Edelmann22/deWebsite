@@ -5,6 +5,8 @@ import Image from "next/image"
 import { LANGUAGE_META, type Language, type TranslationDictionary } from "@/lib/i18n"
 import { CalendarDays, ChevronRight, Sparkles, Users, Briefcase, Newspaper, Megaphone, Rocket, Star } from "lucide-react"
 
+
+
 type Offer = { title: string; body: string; icon: React.ReactNode }
 type NewsItem = { title: string; body: string; icon: React.ReactNode }
 
@@ -61,10 +63,10 @@ export default function LandingPage({
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,175,189,0.16),transparent_40%),radial-gradient(circle_at_top_right,rgba(234,179,90,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(111,80,200,0.08),transparent_45%)]" />
+      {/*<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(91,175,189,0.16),transparent_40%),radial-gradient(circle_at_top_right,rgba(234,179,90,0.16),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(111,80,200,0.08),transparent_45%)]" />*/}
       <div className="relative z-10">
         <header className="sticky top-0 z-40 border-b border-border bg-card/85 backdrop-blur-md">
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="mx-auto flex` h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm">
                 <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={28} height={28} />

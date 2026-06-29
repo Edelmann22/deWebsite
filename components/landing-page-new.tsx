@@ -13,6 +13,57 @@ import { CoursesSection } from "@/components/sections/courses-section"
 import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
 
+
+const BG_IMAGES = [
+    { src: "/Ph1.jpg", caption: ""},
+    { src: "/Ph2.jpg", caption: ""},
+    { src: "/Ph3.jpg", caption: "Alpen"},
+    { src: "/Ph4.jpg", caption: "Wien, Österreich"},
+    { src: "/Ph5.jpg", caption: "Schloss Neuschwanstein, Bayern"},
+    { src: "/Ph6.jpg", caption: "Olympiastadion, Berlin"},
+    { src: "/Ph7.jpg", caption: "BMW Welt, München"},
+    { src: "/Ph8.jpg", caption: "Der Fernsehturm, Berlin"},
+    { src: "/Ph9.jpg", caption: "Brandenburger Tor, Berlin"},
+    { src: "/Ph10.jpg", caption: "Der Bodensee, Bayern"},
+    { src: "/Ph11.jpg", caption: "München, Bayern"},
+];
+
+function BackgroundSlideshow()
+{
+    const [current, setCurrent] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrent((prev) => (prev + 1) % BG_IMAGES.length)
+        }, 5000)
+        return () => clearInterval(interval)
+    }, [])
+
+    return(
+        <div className="pointer-events-none absolute inset-0 z-0">
+            {BG_IMAGES.map((image, i) => (
+                <div
+                    key={image.src}
+                    className="absolute inset-0 transition-opacity duration-1000"
+                    style={{
+                        opacity: i === current ? 1 : 0,
+                        backgroundImage: `url(${image.src})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        willChange: i === current || i === (current + 1) % BG_IMAGES.length ? "opacity" : "auto",
+                    }}
+                    />
+            ))}
+            <div className="absolute inset-0 bg-black/55" />
+            {BG_IMAGES[current].caption && (
+                <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 rounded-md bg-black/40 px-2.5 py-1 backdrop-blur-sm">
+                    <span className="text-xs text-white/60">{BG_IMAGES[current].caption}</span>        
+                </div>
+            )}
+        </div>
+    );
+}
+
 type Props = {
   language: Language
   onLanguageChange: (value: Language) => void
@@ -89,9 +140,11 @@ export default function NewLandingPage({
   ] as const
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
+    <div className="relative min-h-screen overflow-hidden bg-white">
+      <BackgroundSlideshow />
+      <div className="relative z-10">
+        {/* Navigation */}
+        <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
@@ -381,6 +434,7 @@ export default function NewLandingPage({
           </div>
         </div>
       </footer>
+      </div>
     </div>
   )
 }

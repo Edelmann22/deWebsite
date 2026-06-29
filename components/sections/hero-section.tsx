@@ -15,14 +15,15 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50" />
+     {/*} <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.1),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.1),transparent_40%)]" />
-      
-      {/* Decorative elements */}
+     
+
+      {/* Decorative elements 
       <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
       <div className="absolute top-40 right-10 w-72 h-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000" />
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000" />
-      
+      */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
         {/*<div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-blue-700 mb-8">
@@ -35,12 +36,13 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
           <span className="block text-red-500 mt-2">
             {t.heroTitleHighlight}
           </span>
+            {/* Supporting description */}
+            <p className="text-lg sm:text-xl lg:text-6xl text-yellow-400 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
+            {t.heroSubtitle}
+            </p>
         </h1>
         
-        {/* Supporting description */}
-        <p className="text-lg sm:text-xl lg:text-3xl text-yellow-400 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
-          {t.heroSubtitle}
-        </p>
+        
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
