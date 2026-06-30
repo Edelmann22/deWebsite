@@ -77,7 +77,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
         </div>
         
         {/* Trust indicators */}
-        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-gray-500">
+        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             {t.trustIndicator1}
