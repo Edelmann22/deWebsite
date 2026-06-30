@@ -31,13 +31,13 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
         </div>*/}
         
         {/* Main headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-grey mb-6 leading-tight">
           {t.heroTitle}
           <span className="block text-red-500 mt-2">
             {t.heroTitleHighlight}
           </span>
             {/* Supporting description */}
-            <p className="text-lg sm:text-xl lg:text-6xl text-yellow-400 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
+            <p className="text-lg sm:text-xl lg:text-6xl text-yellow-300 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
             {t.heroSubtitle}
             </p>
         </h1>
@@ -45,7 +45,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
         
         
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white/70">
           <Button
             onClick={onLearnWithUs}
             size="lg"

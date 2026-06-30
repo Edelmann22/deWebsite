@@ -15,21 +15,20 @@ import EventsSection from "@/components/sections/events-section"
 
 
 const BG_IMAGES = [
-    { src: "/Ph1.jpg", caption: ""},
-    { src: "/Ph2.jpg", caption: ""},
-    { src: "/Ph3.jpg", caption: "Alpen"},
-    { src: "/Ph4.jpg", caption: "Wien, Österreich"},
-    { src: "/Ph5.jpg", caption: "Schloss Neuschwanstein, Bayern"},
-    { src: "/Ph6.jpg", caption: "Olympiastadion, Berlin"},
-    { src: "/Ph7.jpg", caption: "BMW Welt, München"},
-    { src: "/Ph8.jpg", caption: "Der Fernsehturm, Berlin"},
-    { src: "/Ph9.jpg", caption: "Brandenburger Tor, Berlin"},
-    { src: "/Ph10.jpg", caption: "Der Bodensee, Bayern"},
-    { src: "/Ph11.jpg", caption: "München, Bayern"},
+    { src: "/Ph1.jpg", caption: "", position: "center bottom" },
+  { src: "/Ph2.jpg", caption: "", position: "center bottom" },
+  { src: "/Ph3.jpg", caption: "Alpen", position: "center bottom" },
+  { src: "/Ph4.jpg", caption: "Wien, Österreich", position: "center bottom" },
+  { src: "/Ph5.jpg", caption: "Schloss Neuschwanstein, Bayern", position: "center bottom" },
+  { src: "/Ph6.jpg", caption: "Olympiastadion, Berlin", position: "center bottom" },
+  { src: "/Ph7.jpg", caption: "BMW Welt, München", position: "center bottom" },
+  { src: "/Ph8.jpg", caption: "Der Fernsehturm, Berlin", position: "center bottom" },
+  { src: "/Ph9.jpg", caption: "Brandenburger Tor, Berlin", position: "center bottom" },
+  { src: "/Ph10.jpg", caption: "Der Bodensee, Bayern", position: "center bottom" },
+  { src: "/Ph11.jpg", caption: "München, Bayern", position: "center bottom" },
 ];
 
-function BackgroundSlideshow()
-{
+function BackgroundSlideshow() {
     const [current, setCurrent] = useState(0);
 
     useEffect(() => {
@@ -39,22 +38,37 @@ function BackgroundSlideshow()
         return () => clearInterval(interval)
     }, [])
 
-    return(
-        <div className="pointer-events-none absolute inset-0 z-0">
+    return (
+        <div className="pointer-events-none fixed absolute inset-0 z-0 bg-white">
             {BG_IMAGES.map((image, i) => (
                 <div
                     key={image.src}
-                    className="absolute inset-0 transition-opacity duration-1000"
+                    // FIX: Explicitly forced full dimensions and a clean white fallback on the wrapper
+                    className="absolute h-full w-full inset-0 transition-opacity duration-1000 bg-white"
                     style={{
                         opacity: i === current ? 1 : 0,
-                        backgroundImage: `url(${image.src})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
                         willChange: i === current || i === (current + 1) % BG_IMAGES.length ? "opacity" : "auto",
                     }}
+                >
+                    <Image 
+                        src={image.src}
+                        alt={image.caption || "Background slide"}
+                        fill
+                        sizes="100vw"
+                        priority={i === 0}
+                        style={{
+                            objectFit: "cover",
+                            objectPosition: "center",
+                        }}
+                        onError={() => {
+                            console.error(`Failed to load background image: ${image.src}`);
+                        }}
                     />
+                </div>
             ))}
+            {/* The semi-transparent dark shade layer */}
             <div className="absolute inset-0 bg-black/55" />
+            
             {BG_IMAGES[current].caption && (
                 <div className="absolute bottom-4 right-4 z-10 flex items-center gap-1.5 rounded-md bg-black/40 px-2.5 py-1 backdrop-blur-sm">
                     <span className="text-xs text-white/60">{BG_IMAGES[current].caption}</span>        
