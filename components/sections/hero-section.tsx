@@ -3,6 +3,7 @@
 import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { TranslationDictionary } from "@/lib/i18n"
+import ClassDetailPanel from "../class-detail-panel"
 
 interface HeroSectionProps {
   onLearnWithUs: () => void
@@ -11,6 +12,25 @@ interface HeroSectionProps {
   t: TranslationDictionary
 }
 
+function GermanFlag()
+{
+    return (
+        <div>
+            <img src="/flagAllesPNG.png" alt="Flag"
+            className="w-[750px] max-w-[85vw]" />
+            
+        </div>
+    );
+}
+
+const SCATTER_IMAGES = [
+    {src: "/A.png", className: "bottom-8 left-6 w-32 h-24 rotate-[-6deg]" },
+    {src: "/D.png", className: "top-24 right-8 w-28 h-20 rotate-[4deg]" },
+
+]
+
+
+
 export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSchedule, t }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -18,29 +38,42 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
      {/*} <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.1),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.1),transparent_40%)]" />
      
-
       {/* Decorative elements 
       <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse" />
       <div className="absolute top-40 right-10 w-72 h-72 bg-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000" />
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000" />
       */}
+
+      {SCATTER_IMAGES.map((img) => (
+        <div
+            key={img.src}
+            className={`absolute ${img.className} z-[5] overflow-hidden `}
+            >
+
+            <img src={img.src} alt="" className="w-full h-full object-cover"/>
+
+        </div>
+      ))}
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <GermanFlag />
         {/* Badge */}
         {/*<div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-blue-700 mb-8">
           {t.heroBadge}
         </div>*/}
-        
-        {/* Main headline */}
+       {/* 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-grey mb-6 leading-tight">
           {t.heroTitle}
           <span className="block text-red-500 mt-2">
             {t.heroTitleHighlight}
           </span>
-            {/* Supporting description */}
             <p className="text-lg sm:text-xl lg:text-6xl text-yellow-300 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
             {t.heroSubtitle}
             </p>
         </h1>
+       */}
+
+        
         
         
         

@@ -78,6 +78,17 @@ function BackgroundSlideshow() {
     );
 }
 
+function GermanFlag()
+{
+    return (
+        <div>
+            <img src="/flagAllesPNG.png" alt="Flag"
+            className="w-[600px] max-w-[85vw]" />
+            
+        </div>
+    );
+}
+
 type Props = {
   language: Language
   onLanguageChange: (value: Language) => void
