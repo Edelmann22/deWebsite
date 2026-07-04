@@ -24,11 +24,11 @@ function GermanFlag()
 }
 
 const SCATTER_IMAGES = [
-    {src: "/A.png", className: "bottom-25 left-15 w-32 h-24 rotate-[-6deg] md:bottom-50 md:left-20 md:w-20 h-30" },
-    {src: "/CH.png", className: "top-15 right-5 w-32 h-24 rotate-[-6deg] md:top-34 md:left-75 md:w-28 md:h-20 md:rotate-[4deg]" },
-    {src: "/L.png", className: "bottom-151 left-5 w-26 h-25 rotate-[10deg] md:top-61 md:left-25 md:w-26 md:h-25 md:rotate-[10deg]"},
-    {src: "/FL.png", className: "bottom-120 right-15 w-23 h-21 rotate-[7deg] md:bottom-120 md:right-40 md:w-23 md:h-21 md:rotate-[7deg]" },
-    {src: "/D.png", className: "bottom-57 right-2 w-31 h-25 rotate-[-9deg] md:bottom-57 md:right-22 md:w-31 md:h-25 md:rotate-[-9deg]"}
+    {src: "/A.png", className: "bottom-95 left-5 w-21 h-21 rotate-[-6deg] md:bottom-50 md:left-20 md:w-20 h-30" },
+    {src: "/CH.png", className: "top-15 right-5 w-16 h-17 rotate-[-6deg] md:top-34 md:left-75 md:w-28 md:h-20 md:rotate-[4deg]" },
+    {src: "/L.png", className: "top-3 left-5 w-15 h-16 rotate-[10deg] md:top-61 md:left-25 md:w-26 md:h-25 md:rotate-[10deg]"},
+    {src: "/FL.png", className: "top-70 right-1 w-15 h-15 rotate-[7deg] md:bottom-120 md:right-40 md:w-23 md:h-21 md:rotate-[7deg]" },
+    {src: "/D.png", className: "bottom-57 right-1 w-21 h-25 rotate-[-9deg] md:bottom-57 md:right-22 md:w-31 md:h-25 md:rotate-[-9deg]"}
 
 ]
 
@@ -36,7 +36,7 @@ const SCATTER_IMAGES = [
 
 export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSchedule, t }: HeroSectionProps) {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative h-screen max-h-screen flex items-center justify-center overflow-hidden">
       {/* Background gradients */}
      {/*} <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.1),transparent_50%),radial-gradient(circle_at_bottom_right,rgba(251,146,60,0.1),transparent_40%)]" />
@@ -50,7 +50,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
       {SCATTER_IMAGES.map((img) => (
         <div
             key={img.src}
-            className={`absolute ${img.className} z-[5] overflow-hidden `}
+            className={`absolute ${img.className} z-[5] overflow-hidden pointer-events-none`}
             >
 
             <img src={img.src} alt="" className="w-full h-full object-cover"/>
