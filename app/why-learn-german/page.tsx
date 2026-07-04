@@ -17,41 +17,47 @@ export default function WhyLearnGermanPage() {
 
   const reasons = [
     {
-      icon: <Globe className="w-8 h-8 text-blue-600" />,
-      title: t.whyGermanReason1Title,
-      description: t.whyGermanReason1Description,
-      stats: t.whyGermanReason1Stats,
-    },
-    {
-      icon: <Briefcase className="w-8 h-8 text-green-600" />,
-      title: t.whyGermanReason2Title,
-      description: t.whyGermanReason2Description,
-      stats: t.whyGermanReason2Stats,
-    },
-    {
-      icon: <GraduationCap className="w-8 h-8 text-purple-600" />,
-      title: t.whyGermanReason3Title,
-      description: t.whyGermanReason3Description,
-      stats: t.whyGermanReason3Stats,
-    },
-    {
-      icon: <Users className="w-8 h-8 text-orange-600" />,
-      title: t.whyGermanReason4Title,
-      description: t.whyGermanReason4Description,
-      stats: t.whyGermanReason4Stats,
-    },
-    {
-      icon: <Brain className="w-8 h-8 text-red-600" />,
-      title: t.whyGermanReason5Title,
-      description: t.whyGermanReason5Description,
-      stats: t.whyGermanReason5Stats,
-    },
-    {
-      icon: <Heart className="w-8 h-8 text-pink-600" />,
-      title: t.whyGermanReason6Title,
-      description: t.whyGermanReason6Description,
-      stats: t.whyGermanReason6Stats,
-    },
+    icon: <Globe className="w-6 h-6" />,
+    color: "bg-blue-500",
+    title: t.whyGermanReason1Title,
+    description: t.whyGermanReason1Description,
+    stats: t.whyGermanReason1Stats,
+  },
+  {
+    icon: <Briefcase className="w-6 h-6" />,
+    color: "bg-emerald-500",
+    title: t.whyGermanReason2Title,
+    description: t.whyGermanReason2Description,
+    stats: t.whyGermanReason2Stats,
+  },
+  {
+    icon: <GraduationCap className="w-6 h-6" />,
+    color: "bg-violet-500",
+    title: t.whyGermanReason3Title,
+    description: t.whyGermanReason3Description,
+    stats: t.whyGermanReason3Stats,
+  },
+  {
+    icon: <Users className="w-6 h-6" />,
+    color: "bg-orange-500",
+    title: t.whyGermanReason4Title,
+    description: t.whyGermanReason4Description,
+    stats: t.whyGermanReason4Stats,
+  },
+  {
+    icon: <Brain className="w-6 h-6" />,
+    color: "bg-red-500",
+    title: t.whyGermanReason5Title,
+    description: t.whyGermanReason5Description,
+    stats: t.whyGermanReason5Stats,
+  },
+  {
+    icon: <Heart className="w-6 h-6" />,
+    color: "bg-pink-500",
+    title: t.whyGermanReason6Title,
+    description: t.whyGermanReason6Description,
+    stats: t.whyGermanReason6Stats,
+  },
   ]
 
   const industries = [
