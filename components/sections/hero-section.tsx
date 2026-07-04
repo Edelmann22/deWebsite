@@ -24,11 +24,11 @@ function GermanFlag()
 }
 
 const SCATTER_IMAGES = [
-    {src: "/A.png", className: "hidden md:block bottom-45 left-45 w-32 h-24 rotate-[-6deg]" },
-    {src: "/CH.png", className: "hidden md:block top-34 left-75 w-28 h-20 rotate-[4deg]" },
-    {src: "/L.png", className: "hidden md:block top-61 left-25 w-26 h-25 rotate-[10deg]"},
-    {src: "/FL.png", className: "hidden md:block bottom-120 right-40 w-23 h-21 rotate-[7deg]" },
-    {src: "/D.png", className: "hidden md:block bottom-57 right-22 w-31 h-25 rotate-[-9deg]"}
+    {src: "/A.png", className: "bottom-25 left-15 w-32 h-24 rotate-[-6deg] md:bottom-50 md:left-20 md:w-20 h-30" },
+    {src: "/CH.png", className: "top-15 right-5 w-32 h-24 rotate-[-6deg] md:top-34 md:left-75 md:w-28 md:h-20 md:rotate-[4deg]" },
+    {src: "/L.png", className: "bottom-151 left-5 w-26 h-25 rotate-[10deg] md:top-61 md:left-25 md:w-26 md:h-25 md:rotate-[10deg]"},
+    {src: "/FL.png", className: "bottom-120 right-15 w-23 h-21 rotate-[7deg] md:bottom-120 md:right-40 md:w-23 md:h-21 md:rotate-[7deg]" },
+    {src: "/D.png", className: "bottom-57 right-2 w-31 h-25 rotate-[-9deg] md:bottom-57 md:right-22 md:w-31 md:h-25 md:rotate-[-9deg]"}
 
 ]
 
@@ -114,7 +114,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
         </div>
         
         {/* Trust indicators */}
-        <div className="flex flex-col sm:flex-row gap-14 justify-center items-center text-sm text-white mt-3">
+        <div className="flex flex-col sm:flex-row sm:gap-14 gap-4 justify-center items-center text-sm text-white mt-3">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             {t.trustIndicator1}
