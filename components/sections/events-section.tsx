@@ -95,7 +95,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                     <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-inherit">
                         <div className="flex flex-col items-center gap-2">
                             <div className="h-7 w-7 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900"/>
-                            <span className="text-xs text-gray-500 font-medium">Laden...</span>
+                            <span className="text-xs text-gray-500 font-medium">{t.eventsLoading}</span>
                         </div>
                     </div>
                 )}
@@ -153,7 +153,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                         {loadingEventId === event.id ? (
                             <div className="h-3.5 w-3.5 animate-spin rounded-full border border-gray-400 border-t-gray-900" />
                         ) : (
-                            <>Read more <ArrowRight size={14} /></>
+                            <>{t.readMore}<ArrowRight size={14} /></>
                         )
                     }
                       </span>
