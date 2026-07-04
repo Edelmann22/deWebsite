@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import type { TranslationDictionary } from "@/lib/i18n"
 import type { EventRow } from "@/lib/db"
+import { useState  } from "react"
+
+
 
 interface EventsSectionProps {
   events: EventRow[]
@@ -19,6 +22,14 @@ interface EventsSectionProps {
 
 export default function EventsSection({ events, eventsLoading, onViewEventDetails, t, locale }: EventsSectionProps) {
   const router = useRouter()
+  
+  const [loadingEventId, setLoadingEventId] = useState<number | null>(null)
+
+    const handleEventClick = (eventId: number) => 
+    {
+        setLoadingEventId(eventId)
+        router.push(`/events/${eventId}`)
+    }
   
   // Helper function to extract text from HTML
   function extractTextFromHtml(html: string) {
@@ -76,9 +87,19 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
             {sortedEvents.slice(0, 6).map((event) => (
               <Card
                 key={event.id} 
-                className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-blue-300"
-                onClick={() => router.push(`/events/${event.id}`)}
+                className="relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-blue-300"
+                onClick={() => handleEventClick(event.id)}
               >
+                {/* Loading overlay */}
+                {loadingEventId === event.id && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-inherit">
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="h-7 w-7 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900"/>
+                            <span className="text-xs text-gray-500 font-medium">Laden...</span>
+                        </div>
+                    </div>
+                )}
+
                 {event.images && event.images.length > 0 && (
                   <div className="aspect-video overflow-hidden bg-gray-100">
                     <img
@@ -102,9 +123,9 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                       })}
                     </span>
                   </div>
-                  <CardTitle className="text-xl line-clamp-2 group-hover:text-blue-600 transition-colors flex items-start justify-between gap-2">
+                  <CardTitle className="text-xl line-clamp-2 group-hover:text-yellow-600 transition-colors flex items-start justify-between gap-2">
                     <span>{event.title}</span>
-                    <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-600 flex-shrink-0 mt-1" />
+                    <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-yellow-600 flex-shrink-0 mt-1" />
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -122,15 +143,19 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="p-0 h-auto hover:text-blue-600 hover:bg-blue-50 rounded-md px-2 py-1 transition-colors"
+                      className="p-0 h-auto hover:text-white hover:bg-yellow-400 rounded-md px-2 py-1 transition-colors"
                       onClick={(e) => {
                         e.stopPropagation()
-                        router.push(`/events/${event.id}`)
+                        handleEventClick(event.id)
                       }}
                     >
-                      <span className="flex items-center gap-1">
-                        Read more
-                        <ArrowRight size={14} />
+                      <span className="flex items-center gap-1 hover:text-white">
+                        {loadingEventId === event.id ? (
+                            <div className="h-3.5 w-3.5 animate-spin rounded-full border border-gray-400 border-t-gray-900" />
+                        ) : (
+                            <>Read more <ArrowRight size={14} /></>
+                        )
+                    }
                       </span>
                     </Button>
                   </div>

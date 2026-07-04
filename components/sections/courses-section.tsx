@@ -94,11 +94,11 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
         {/* Offer Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
           {offers.map((offer) => (
-            <Card key={offer.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${offer.popular ? 'ring-2 ring-blue-500 shadow-lg' : 'shadow-md'}`}>
+            <Card key={offer.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${offer.popular ? 'ring-2 ring-yellow-500 shadow-lg' : 'shadow-md'}`}>
               {/* Popular Badge */}
               {offer.popular && (
                 <div className="absolute top-4 right-4 z-10">
-                  <Badge className="bg-blue-500 text-white px-3 py-1 text-xs font-semibold">
+                  <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs font-semibold">
                     {t.popularBadge}
                   </Badge>
                 </div>
@@ -144,7 +144,7 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
                   </div>
                   <Button 
                     onClick={() => onEnroll(offer.id)}
-                    className={`w-full ${offer.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-900 hover:bg-gray-800'} text-white font-semibold py-3 transition-all duration-300`}
+                    className={`w-full ${offer.popular ? 'bg-yellow-600 hover:bg-red-800' : 'bg-gray-900 hover:bg-gray-800'} text-white font-semibold py-3 transition-all duration-300`}
                   >
                     {t.enrollNow}
                     <ArrowRight className="ml-2 h-4 w-4" />

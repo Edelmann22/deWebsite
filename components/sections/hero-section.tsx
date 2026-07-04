@@ -24,8 +24,11 @@ function GermanFlag()
 }
 
 const SCATTER_IMAGES = [
-    {src: "/A.png", className: "bottom-8 left-6 w-32 h-24 rotate-[-6deg]" },
-    {src: "/D.png", className: "top-24 right-8 w-28 h-20 rotate-[4deg]" },
+    {src: "/A.png", className: "hidden md:block bottom-45 left-45 w-32 h-24 rotate-[-6deg]" },
+    {src: "/CH.png", className: "hidden md:block top-34 left-75 w-28 h-20 rotate-[4deg]" },
+    {src: "/L.png", className: "hidden md:block top-61 left-25 w-26 h-25 rotate-[10deg]"},
+    {src: "/FL.png", className: "hidden md:block bottom-120 right-40 w-23 h-21 rotate-[7deg]" },
+    {src: "/D.png", className: "hidden md:block bottom-57 right-22 w-31 h-25 rotate-[-9deg]"}
 
 ]
 
@@ -82,7 +85,8 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
           <Button
             onClick={onLearnWithUs}
             size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+            variant="outline"
+            className="border border-gray-600 bg-black hover:bg-gray-800 hover:border-gray-400 hover:text-white-200 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-2 transform"
           >
             {t.learnWithUs}
             <ChevronRight className="ml-2 h-5 w-5" />
@@ -90,9 +94,9 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
           
           <Button
             onClick={onWhyLearnGerman}
-            variant="outline"
             size="lg"
-            className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 text-lg font-semibold rounded-xl bg-white/80 backdrop-blur-sm hover:bg-gray-50 transition-all duration-300"
+            variant="outline"
+            className="border border-gray-600 bg-red-700 hover:bg-red-800 hover:border-gray-400 hover:text-white-200 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-2 transform"
           >
             {t.whyLearnGerman}
             <ChevronRight className="ml-2 h-5 w-5" />
@@ -100,9 +104,9 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
           
           <Button
             onClick={onViewSchedule}
-            variant="secondary"
-            size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+           size="lg"
+            variant="outline"
+            className="border border-gray-600 bg-yellow-500 hover:bg-yellow-600 hover:border-gray-400 hover:text-white-200 text-white px-8 py-4 text-lg font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-2 transform"
           >
             {t.viewSchedule}
             <ChevronRight className="ml-2 h-5 w-5" />
@@ -110,7 +114,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
         </div>
         
         {/* Trust indicators */}
-        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white">
+        <div className="flex flex-col sm:flex-row gap-14 justify-center items-center text-sm text-white mt-3">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             {t.trustIndicator1}
