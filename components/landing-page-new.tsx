@@ -142,7 +142,7 @@ export default function NewLandingPage({
   }
 
   const handleEnroll = (_courseId: string) => {
-    router.push("/offers")
+    router.push(`/courses/${_courseId}`)
   }
 
   const handleCourseOffer = (section: "group" | "individual" | "exam-prep") => {
@@ -159,9 +159,9 @@ export default function NewLandingPage({
   }
 
   const courseDropdownItems = [
-    { label: t.offersGroupTitle, section: "group" },
-    { label: t.offersIndividualTitle, section: "individual" },
-    { label: t.offersExamPrepTitle, section: "exam-prep" },
+    { label: t.offersGroupTitle, section: "/courses/group" },
+    { label: t.offersIndividualTitle, section: "/courses/individual" },
+    { label: t.offersExamPrepTitle, section: "/courses/exam-prep" },
   ] as const
 
   return (
@@ -200,7 +200,7 @@ export default function NewLandingPage({
                       <button
                         key={item.section}
                         type="button"
-                        onClick={() => handleCourseOffer(item.section)}
+                        onClick={() => router.push(item.section)}
                         className="block w-full rounded-md px-3 py-2 text-left text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 hover:text-gray-900 focus:bg-gray-50 focus:text-gray-900 focus:outline-none"
                       >
                         {item.label}

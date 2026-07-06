@@ -33,7 +33,7 @@ export default function CourseOffers({ t }: CourseOffersProps)
 
     const handleEnroll = (courseId: string) => 
     {
-        router.push(`/offers?package=${courseId}`)
+        router.push(`/courses/${courseId}`)
     }
 
     return (
@@ -47,7 +47,7 @@ export default function CourseOffers({ t }: CourseOffersProps)
 export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
   const offers: Offer[] = [
     {
-      id: "group-lesson",
+      id: "group",
       title: t.groupLessonTitle,
       duration: t.groupLessonDuration,
       price: 60,
@@ -60,7 +60,7 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
       ],
     },
     {
-      id: "individual-lesson",
+      id: "individual",
       title: t.package10Title,
       duration: t.package10Duration,
       price: 300,
