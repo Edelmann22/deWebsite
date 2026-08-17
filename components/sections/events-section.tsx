@@ -66,9 +66,9 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">{t.eventsTitle || "Upcoming Events"}</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+         {/*} <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             {t.eventsSubtitle || "Stay updated with our latest announcements, workshops, and special events."}
-          </p>
+          </p>*/}
         </div>
 
         {eventsLoading ? (

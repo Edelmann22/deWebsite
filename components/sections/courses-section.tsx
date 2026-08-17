@@ -73,6 +73,19 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
       ],
       popular: true,
     },
+    {
+        id: "exam-prep",
+        title: t.examOfferTitle,
+        duration: t.examOfferDuration,
+        price: 100,
+        description: t.examOfferDescription,
+        features: [
+          t.examOfferFeature1,
+          t.examOfferFeature2,
+          t.examOfferFeature3,
+          t.examOfferFeature4,
+        ],
+    },
   ]
 
   return (
@@ -80,9 +93,6 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm font-semibold">
-            {t.coursesBadge}
-          </Badge>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
             {t.offersTitle}
           </h2>
@@ -92,12 +102,12 @@ export function CoursesSection({ onEnroll, t }: CoursesSectionProps) {
         </div>
 
         {/* Offer Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {offers.map((offer) => (
             <Card key={offer.id} className={`relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${offer.popular ? 'ring-2 ring-yellow-500 shadow-lg' : 'shadow-md'}`}>
               {/* Popular Badge */}
               {offer.popular && (
-                <div className="absolute top-4 right-4 z-10">
+                <div className="absolute top-1 right-2 z-10">
                   <Badge className="bg-yellow-500 text-white px-3 py-1 text-xs font-semibold">
                     {t.popularBadge}
                   </Badge>

@@ -100,12 +100,8 @@ export default function GroupCoursePage() {
         <div className="pointer-events-none absolute -bottom-16 -left-12 h-48 w-48 rounded-full bg-red-600/10 blur-3xl" />
 
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400 mb-6">
-            <Users className="w-3.5 h-3.5" />
-            Групово обучение
-          </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-4">
-            Учете заедно,<br />напредвайте по-бързо
+            Групово обучение
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
             Нива А1 до В2 · Два пъти седмично · 3 учебни часа (120 мин + 10 мин почивка)
@@ -129,24 +125,19 @@ export default function GroupCoursePage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* Schedule info bar */}
-        <section className="py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {[
-              { icon: <Calendar className="w-5 h-5 text-yellow-500" />, label: "Учебна година", value: "1 октомври – 31 май" },
-              { icon: <Clock className="w-5 h-5 text-yellow-500" />, label: "Продължителност", value: "120 мин + 10 мин почивка" },
-              { icon: <Users className="w-5 h-5 text-yellow-500" />, label: "Занятия", value: "2 пъти седмично" },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-gray-50 p-5">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gray-900">
-                  {item.icon}
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">{item.label}</p>
-                  <p className="text-sm font-bold text-gray-900">{item.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        <section className="py-12 flex justify-center items-center">
+            <div 
+                style={{
+                backgroundColor: '#f3f4f6', // светлосив фон
+                padding: '24px',
+                borderRadius: '8px',
+                maxWidth: '600px',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                }}
+            >
+                <p>Учебна година 1 октомври – 31 май | Продължителност 120 мин + 10 мин почивка | Занятия 2 пъти седмично</p>
+            </div>
         </section>
 
         {/* Level cards */}
@@ -156,34 +147,37 @@ export default function GroupCoursePage() {
             <div className="mt-3 mx-auto w-16 h-1 rounded-full bg-yellow-400" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="divide-y divide-gray-100 border-y border-gray-100">
             {LEVELS.map((lvl) => (
-              <div key={lvl.level}
-                className={`group relative rounded-2xl border ${lvl.border} bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300`}>
-                <div className={`absolute top-0 left-6 right-6 h-0.5 rounded-full ${lvl.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
-
-                <div className="flex items-center justify-between mb-4">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${lvl.color} text-white font-bold text-lg`}>
+                <div 
+                key={lvl.level}
+                className="py-3.5 px-3 flex items-center justify-between gap-4 hover:bg-gray-50/80 transition-colors rounded-xl group"
+                >
+                {/* Left: Level Pill + CEFR Badge */}
+                <div className="flex items-center gap-3">
+                    {/* Accent level badge */}
+                    <span className={`inline-flex items-center justify-center min-w-[2.75rem] h-8 px-2.5 rounded-lg text-xs font-bold text-white shadow-sm ${lvl.color || 'bg-indigo-600'}`}>
                     {lvl.level}
-                  </div>
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${lvl.badge}`}>
+                    </span>
+                    <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${lvl.badge || 'bg-indigo-50 text-indigo-700'}`}>
                     CEFR {lvl.level}
-                  </span>
+                    </span>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                {/* Right: Schedule Details with colored icons */}
+                <div className="flex items-center gap-5 text-xs text-gray-700">
+                    <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-indigo-500 flex-shrink-0" />
                     <span className="font-medium">{lvl.days}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-700">
-                    <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                    <span className="font-bold text-gray-900">{lvl.time}</span>
-                  </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-gray-100/70 px-2.5 py-1 rounded-md">
+                    <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <span className="font-semibold text-gray-900">{lvl.time}</span>
+                    </div>
                 </div>
-              </div>
+                </div>
             ))}
-          </div>
+            </div>
         </section>
 
         {/* Summer course */}
