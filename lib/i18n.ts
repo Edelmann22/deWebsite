@@ -10,7 +10,7 @@ export const LANGUAGE_META: Record<Language, { label: string; locale: string }> 
 
 export const translations = {
   en: {
-    appName: "DUD",
+    appName: "Deutscherei",
     weekView: "Week View",
     newClass: "New Class",
     newEvent: "Create Event",
@@ -319,7 +319,7 @@ export const translations = {
     newsThreeBody: "Short progress meetings for families available on request.",
   },
   de: {
-    appName: "DUD",
+    appName: "Deutscherei",
     weekView: "Wochenansicht",
     newClass: "Neue Stunde",
     newEvent: "Event erstellen",
@@ -634,7 +634,7 @@ export const translations = {
     whyGermanCtaPrimary: "Jetzt starten",
   },
   bg: {
-    appName: "DUD",
+    appName: "Deutscherei",
     weekView: "Седмичен изглед",
     newClass: "Нов час",
     newEvent: "Създай събитие",
@@ -791,7 +791,7 @@ export const translations = {
     heroHighlightTwoBody: "Концерти, уъркшопи и сезонни обновления.",
     heroHighlightThreeTitle: "Ясен напредък",
     heroHighlightThreeBody: "Подредени нива за деца, тийнейджъри и възрастни.",
-    offersTitle: "Нашите оферти",
+    offersTitle: "Обучение",
     offersSubtitle: "Избери подход, съобразен с начина на учене на всяка група.",
     groupLessonTitle: "Групово обучение по немски",
     groupLessonDuration: "120 минути + 10 почивка",

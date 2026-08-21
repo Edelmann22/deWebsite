@@ -24,11 +24,11 @@ function GermanFlag()
 }
 
 const SCATTER_IMAGES = [
-    {src: "/A.png", className: "bottom-95 left-5 w-21 h-21 rotate-[-6deg] md:bottom-50 md:left-20 md:w-20 h-30" },
-    {src: "/CH.png", className: "top-15 right-5 w-16 h-17 rotate-[-6deg] md:top-34 md:left-75 md:w-28 md:h-20 md:rotate-[4deg]" },
-    {src: "/L.png", className: "top-3 left-5 w-15 h-16 rotate-[10deg] md:top-61 md:left-25 md:w-26 md:h-25 md:rotate-[10deg]"},
-    {src: "/FL.png", className: "top-70 right-1 w-15 h-15 rotate-[7deg] md:bottom-120 md:right-40 md:w-23 md:h-21 md:rotate-[7deg]" },
-    {src: "/D.png", className: "bottom-57 right-1 w-21 h-25 rotate-[-9deg] md:bottom-57 md:right-22 md:w-31 md:h-25 md:rotate-[-9deg]"}
+    {src: "/A.png", title: "Austria", description: "Austria is a landlocked country in Central Europe", className: "bottom-95 left-5 w-21 h-21 rotate-[-6deg] md:bottom-50 md:left-20 md:w-20 h-30" },
+    {src: "/CH.png", title: "Switzerland", description: "Switzerland is a small country in the heart of Europe", className: "top-15 right-5 w-16 h-17 rotate-[-6deg] md:top-34 md:left-75 md:w-28 md:h-20 md:rotate-[4deg]" },
+    {src: "/L.png", title: "Luxembourg", description: "Luxembourg is a small principality in the Alps", className: "top-3 left-5 w-15 h-16 rotate-[10deg] md:top-61 md:left-25 md:w-26 md:h-25 md:rotate-[10deg]"},
+    {src: "/FL.png", title: "Liechtenstein", description: "Liechtenstein is a small principality in the Alps", className: "top-70 right-1 w-15 h-15 rotate-[7deg] md:bottom-120 md:right-40 md:w-23 md:h-21 md:rotate-[7deg]" },
+    {src: "/D.png", title: "Germany", description: "Germany is a country in Central Europe", className: "bottom-57 right-1 w-21 h-25 rotate-[-9deg] md:bottom-57 md:right-22 md:w-31 md:h-25 md:rotate-[-9deg]"}
 
 ]
 
@@ -50,36 +50,21 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
       {SCATTER_IMAGES.map((img) => (
         <div
             key={img.src}
-            className={`absolute ${img.className} z-[5] overflow-hidden pointer-events-none`}
+            className={`absolute ${img.className} z-20 overflow-visible group cursor-pointer `}
             >
 
-            <img src={img.src} alt="" className="w-full h-full object-cover"/>
+            <img src={img.src} alt={img.title} className="w-full h-full object-cover"/>
+            <div className="absolute left-1/2 bottom-full mb-2 w-48 -translate-x-1/2 rounded-lg bg-white px-3 py-2 text-left text-sm text-gray-800 shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 group-hover:opacity-100">
+                <p className="font-bold">{img.title}</p>
+                <p className="text-xs text-gray-600">{img.description}</p>
+            </div>
 
         </div>
       ))}
       
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center popinter-events-none">
         <GermanFlag />
-        {/* Badge */}
-        {/*<div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/80 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-blue-700 mb-8">
-          {t.heroBadge}
-        </div>*/}
-       {/* 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-grey mb-6 leading-tight">
-          {t.heroTitle}
-          <span className="block text-red-500 mt-2">
-            {t.heroTitleHighlight}
-          </span>
-            <p className="text-lg sm:text-xl lg:text-6xl text-yellow-300 mb-12 max-w-4xl mx-auto leading-relaxed font-bold">
-            {t.heroSubtitle}
-            </p>
-        </h1>
-       */}
 
-        
-        
-        
-        
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white/70">
           <Button

@@ -177,10 +177,14 @@ export default function NewLandingPage({
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm">
-                <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={28} height={28} />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-gray-900">{t.appName}</span>
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={144}
+                height={36}
+                className="h-9 w-auto"
+                priority
+              />
             </button>
 
             {/* Desktop Navigation */}
@@ -386,10 +390,13 @@ export default function NewLandingPage({
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="flex items-center gap-2.5 mb-4 hover:opacity-80 transition-opacity text-left"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm">
-                  <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={28} height={28} />
-                </div>
-                <span className="text-lg font-bold">{t.appName}</span>
+                <Image
+                  src="/deutschereiLogo.png"
+                  alt={`${t.appName} logo`}
+                  width={144}
+                  height={36}
+                  className="h-9 w-auto"
+                />
               </button>
               <p className="text-gray-300 mb-4 max-w-md">
                 {t.footerDescription}

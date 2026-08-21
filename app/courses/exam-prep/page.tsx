@@ -42,10 +42,14 @@ export default function ExamPrepPage() {
             </Link>
             <div className="h-4 w-px bg-gray-300" />
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white shadow-sm border border-gray-100">
-                <Image src="/dudlogo.png" alt={t.appName} width={20} height={20} />
-              </div>
-              <span className="font-bold text-gray-900 text-sm">{t.appName}</span>
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={128}
+                height={32}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
           </div>
           <div className="flex items-center gap-3">

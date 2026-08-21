@@ -14,17 +14,17 @@ const _jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans"
 const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: 'deutschStube - Language Course Scheduler',
+  title: 'Deutscherei - Language Course Scheduler',
   description: 'Schedule and manage your language classes, lessons, and homework all in one place.',
   generator: 'v0.app',
   icons: {
     icon: [
       {
-        url: '/dudlogo.png',
+        url: '/deutschereiLogo.png',
         type: 'image/png',
       },
     ],
-    apple: '/dudlogo.png',
+    apple: '/deutschereiLogo.png',
   },
 }
 

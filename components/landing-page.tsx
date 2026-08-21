@@ -67,11 +67,15 @@ export default function LandingPage({
       <div className="relative z-10">
         <header className="sticky top-0 z-40 border-b border-border bg-card/85 backdrop-blur-md">
           <div className="mx-auto flex` h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shadow-sm">
-                <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={28} height={28} />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-foreground">{t.appName}</span>
+            <div className="flex items-center">
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={144}
+                height={36}
+                className="h-9 w-auto"
+                priority
+              />
             </div>
 
             <div className="flex items-center gap-2">

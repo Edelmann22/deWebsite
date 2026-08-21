@@ -44,9 +44,14 @@ export default function OffersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
-                <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={24} height={24} />
-              </div>
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={128}
+                height={32}
+                className="h-8 w-auto"
+                priority
+              />
             </Link>
             <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
               <ArrowLeft className="w-4 h-4" />

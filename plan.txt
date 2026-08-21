@@ -1,4 +1,4 @@
-Plan for the DUD Website 
+Plan for the Deutscherei Website 
 
 1) Landing page
  - The first thing the user sees. Beautiful pictures and easy to navigate menu. 

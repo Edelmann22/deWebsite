@@ -158,10 +158,14 @@ export default function HomePage() {
             onClick={() => router.push("/")}
             className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
           >
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white shadow-sm">
-              <Image src="/dudlogo.png" alt={`${t.appName} logo`} width={24} height={24} />
-            </div>
-            <span className="font-bold text-lg text-foreground tracking-tight">{t.appName}</span>
+            <Image
+              src="/deutschereiLogo.png"
+              alt={`${t.appName} logo`}
+              width={144}
+              height={36}
+              className="h-9 w-auto"
+              priority
+            />
           </button>
 
           <div className="flex items-center gap-2">

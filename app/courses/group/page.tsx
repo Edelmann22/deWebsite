@@ -56,18 +56,22 @@ export default function GroupCoursePage() {
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto pl-0 pr-2 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={128}
+                height={32}
+                className="h-8 w-auto"
+                priority
+              />
+            </Link>
+            <div className="h-4 w-px bg-gray-300" />
             <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium">
               <ArrowLeft className="w-4 h-4" />
               Начало
-            </Link>
-            <div className="h-4 w-px bg-gray-300" />
-            <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-white shadow-sm border border-gray-100">
-                <Image src="/dudlogo.png" alt={t.appName} width={20} height={20} />
-              </div>
-              <span className="font-bold text-gray-900 text-sm">{t.appName}</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -103,9 +107,10 @@ export default function GroupCoursePage() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-4">
             Групово обучение
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+         {/*<p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
             Нива А1 до В2 · Два пъти седмично · 3 учебни часа (120 мин + 10 мин почивка)
-          </p>
+            Учебна година 1 октомври – 31 май | Продължителност 120 мин + 10 мин почивка | Занятия 2 пъти седмично  
+          </p>*/} 
           <div className="mt-8 flex flex-wrap gap-3 justify-center">
             <Button onClick={() => router.push("/auth")} size="lg"
               className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-xl px-8">
