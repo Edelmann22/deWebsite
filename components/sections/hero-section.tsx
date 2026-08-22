@@ -3,6 +3,7 @@
 import { ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import type { TranslationDictionary } from "@/lib/i18n"
+import { smoothScrollTo } from "@/lib/smooth-scroll"
 import ClassDetailPanel from "../class-detail-panel"
 
 interface HeroSectionProps {
@@ -64,9 +65,25 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
       
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center popinter-events-none">
         <GermanFlag />
+        <div className="mx-auto mt-1 flex min-h-[96px] w-[420px] max-w-[90vw] items-center justify-center text-[#D10026] sm:h-[60px] sm:min-h-0">
+            <p className='font-["Gummy_Twist"] max-w-[90vw] text-center text-[42px] leading-none sm:whitespace-nowrap sm:text-[72px] lg:text-[76px]'>
+              <span className="block sm:inline">Die</span>{" "}
+              <span className="block sm:inline">beliebte</span>{" "}
+              <a
+                href="#courses"
+                onClick={(event) => {
+                  event.preventDefault()
+                  smoothScrollTo("courses")
+                }}
+                className="block text-[30px] text-[#FFE13A] hover:text-blue-700 sm:inline sm:text-[72px] lg:text-[76px]"
+              >
+                Sprachwerkstatt
+              </a>
+            </p>
+        </div>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white/70">
+        {/*<div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-sm text-white/70">
           <Button
             onClick={onLearnWithUs}
             size="lg"
@@ -96,9 +113,10 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
             {t.viewSchedule}
             <ChevronRight className="ml-2 h-5 w-5" />
           </Button>
-        </div>
+        </div> */}
         
         {/* Trust indicators */}
+        {/* 
         <div className="flex flex-col sm:flex-row sm:gap-14 gap-4 justify-center items-center text-sm text-white mt-3">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
@@ -113,6 +131,7 @@ export default function HeroSection({ onLearnWithUs, onWhyLearnGerman, onViewSch
             {t.trustIndicator3}
           </div>
         </div>
+        */}
       </div>
       
     </section>

@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@font-face {
+    font-family: "Gummy Twist";
+    src: url("/fonts/Gummy%20Twist.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
