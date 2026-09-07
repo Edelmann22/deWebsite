@@ -78,6 +78,14 @@ export default function OffersPage() {
         </div>
       </header>
 
+      <nav className="border-b border-gray-200 bg-white" aria-label="Page navigation">
+        <div className="mx-auto flex max-w-7xl justify-center gap-8 px-4 py-3 text-sm font-semibold text-gray-700">
+          <Link href="/offers" className="text-blue-600">{t.courses}</Link>
+          <Link href="/events" className="hover:text-blue-600">{t.events}</Link>
+          <Link href="/reviews" className="hover:text-blue-600">{t.reviewsBadge}</Link>
+        </div>
+      </nav>
+
       <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         <section className="text-center mb-10">
           <Badge className="mb-4 px-4 py-2 text-sm font-semibold">{t.offersPageBadge}</Badge>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ReviewsSection from "@/components/sections/reviews-section"
@@ -61,6 +62,14 @@ export default function ReviewsPage() {
           </select>
         </div>
       </header>
+
+      <nav className="border-b border-gray-200 bg-white" aria-label="Page navigation">
+        <div className="mx-auto flex max-w-7xl justify-center gap-8 px-4 py-3 text-sm font-semibold text-gray-700">
+          <Link href="/offers" className="hover:text-blue-600">{t.courses}</Link>
+          <Link href="/events" className="hover:text-blue-600">{t.events}</Link>
+          <Link href="/reviews" className="text-blue-600">{t.reviewsBadge}</Link>
+        </div>
+      </nav>
 
       {/* Main Content */}
       <main>

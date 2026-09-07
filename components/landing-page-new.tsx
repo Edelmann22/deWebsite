@@ -1,17 +1,26 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { LANGUAGE_META, type Language, type TranslationDictionary } from "@/lib/i18n"
 import type { SessionUser, EventRow } from "@/lib/db"
-import { ChevronDown, Menu, X } from "lucide-react"
+import { ArrowRight, CalendarDays, GraduationCap, Menu, MessageSquare, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { smoothScrollTo } from "@/lib/smooth-scroll"
 import HeroSection from "@/components/sections/hero-section"
 import { CoursesSection } from "@/components/sections/courses-section"
 import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
+
+const SCATTER_IMAGES = [
+  { src: "/D.png", title: "Germany", description: "Germany is a country in Central Europe", className: "h-[60px] w-[60px] " },
+  { src: "/A.png", title: "Austria", description: "Austria is a landlocked country in Central Europe", className: "h-[60px] w-[60px] " },
+  { src: "/CH.png", title: "Switzerland", description: "Switzerland is a small country in the heart of Europe", className: "h-[60px] w-[60px] " },
+  { src: "/L.png", title: "Luxembourg", description: "Luxembourg is a small principality in the Alps", className: "h-[60px] w-[60px] " },
+  { src: "/FL.png", title: "Liechtenstein", description: "Liechtenstein is a small principality in the Alps", className: "h-[60px] w-[60px] " },
+  ]
 
 
 const BG_IMAGES = [
@@ -187,7 +196,29 @@ export default function NewLandingPage({
               />
             </button>
 
+            {/* Country buttons */}
+            <div className="hidden flex-1 items-center justify-center gap-6 sm:flex">
+              {SCATTER_IMAGES.map((img) => (
+                <button
+                  type="button"
+                  key={img.src}
+                  aria-label={`Learn about ${img.title}`}
+                  className={`group relative w-20 shrink-0 overflow-visible rounded-md transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 ${img.className}`}
+                >
+                  <img src={img.src} alt={img.title} className="h-full w-full object-cover" />
+                  <div className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-48 -translate-x-1/2 rounded-lg bg-white px-3 py-2 text-left text-sm text-gray-800 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100">
+                    <p className="font-bold">{img.title}</p>
+                    <p className="text-xs text-gray-600">{img.description}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            
+
+
             {/* Desktop Navigation */}
+            {/*
             <nav className="hidden md:flex items-center gap-8">
               <div className="group relative">
                 <button
@@ -232,6 +263,7 @@ export default function NewLandingPage({
                 {t.viewSchedule}
               </button>
             </nav>
+            */}
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-3">
@@ -353,31 +385,42 @@ export default function NewLandingPage({
           t={t}
         />
 
-        {/* Courses Section */}
-        <CoursesSection
-          onEnroll={handleEnroll}
-          t={t}
-        />
-
-        {/* Events Section */}
-        <EventsSection
-          events={events}
-          eventsLoading={eventsLoading}
-          onViewEventDetails={handleViewEventDetails}
-          t={t}
-          locale={locale}
-        />
-
-        {/* Reviews Section */}
-        <ReviewsSection
-          isAuthenticated={isAuthenticated}
-          isAdmin={isAdmin}
-          user={user}
-          onLogin={onLogin}
-          t={t}
-          locale={locale}
-          limit={6}
-        />
+        {/* Main page navigation */}
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+          
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              <Link
+                href="/offers"
+                className="group rounded-2xl border border-blue-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <div className="flex items-start justify-between">
+                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-blue-600" />
+                </div>
+                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.courses}</h3>
+                
+              </Link>
+              <Link
+                href="/events"
+                className="group rounded-2xl border border-amber-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <div className="flex items-start justify-between">
+                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-amber-600" />
+                </div>
+                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.events}</h3>
+                
+              </Link>
+              <Link
+                href="/reviews"
+                className="group rounded-2xl border border-rose-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+              >
+                <div className="flex items-start justify-between">
+                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-rose-600" />
+                </div>
+                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.reviewsBadge}</h3>
+                
+              </Link>
+            </div>
+        </section>
       </main>
 
       {/* Footer */}
