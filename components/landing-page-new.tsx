@@ -15,11 +15,11 @@ import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
 
 const SCATTER_IMAGES = [
-  { src: "/D.png", title: "Germany", description: "- Bundesrepublik Deutschland\n- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- Deutsch", className: "h-[60px] w-[60px] " },
-  { src: "/A.png", title: "Austria", description: "- Republik Österreich\n- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- Deutsch / österreichisches Deutsch", className: "h-[60px] w-[60px] " },
-  { src: "/CH.png", title: "Switzerland", description: "- Schweizerische Eidgenossenschaft\n- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- Deutsch (Schweizerdeutsch) /\n- Französisch / Italienisch / Rätoromanisch", className: "h-[60px] w-[60px] " },
-  { src: "/FL.png", title: "Liechtenstein", description: "- Fürstentum Liechtenstein\n- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- Deutsch / Schweizerdeutsch", className: "h-[60px] w-[60px] " },
-  { src: "/L.png", title: "Luxembourg", description: "- Großherzogtum Luxemburg\n- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / Deutsch", className: "h-[60px] w-[60px] " },
+  { src: "/D.png", title: "Bundesrepublik Deutschland", description: "- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- Deutsch", className: "h-[60px] w-[60px] " },
+  { src: "/A.png", title: "Republik Österreich", description: "- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- Deutsch / österreichisches Deutsch", className: "h-[60px] w-[60px] " },
+  { src: "/CH.png", title: "Schweizerische Eidgenossenschaft", description: "- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- Deutsch (Schweizerdeutsch) /\n- Französisch / Italienisch / Rätoromanisch", className: "h-[60px] w-[60px] " },
+  { src: "/FL.png", title: "Fürstentum Liechtenstein", description: "- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- Deutsch / Schweizerdeutsch", className: "h-[60px] w-[60px] " },
+  { src: "/L.png", title: "Großherzogtum Luxemburg", description: "- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / Deutsch", className: "h-[60px] w-[60px] " },
   ]
 
 
