@@ -407,41 +407,60 @@ export default function NewLandingPage({
         />
 
         {/* Main page navigation */}
-        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-          
+        <div className="border-y border-slate-200 bg-slate-50/80 backdrop-blur-sm">
+          <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+            <div className="mb-8 text-center">
+            
+            </div>
+
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
               <Link
                 href="/offers"
-                className="group rounded-2xl border border-blue-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-blue-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <div className="flex items-start justify-between">
-                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-blue-600" />
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white">
+                    <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+                  </span>
                 </div>
-                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.courses}</h3>
-                
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">{t.courses}</h3>
+                  <p className="mt-3 text-sm text-slate-600">Browse language programs and learning tracks.</p>
+                </div>
               </Link>
+
               <Link
                 href="/events"
-                className="group rounded-2xl border border-amber-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-amber-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-500"
               >
-                <div className="flex items-start justify-between">
-                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-amber-600" />
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-amber-50 text-amber-600 transition group-hover:bg-amber-600 group-hover:text-white">
+                    <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+                  </span>
                 </div>
-                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.events}</h3>
-                
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">{t.events}</h3>
+                  <p className="mt-3 text-sm text-slate-600">Discover workshops, meetups, and community events.</p>
+                </div>
               </Link>
+
               <Link
                 href="/reviews"
-                className="group rounded-2xl border border-rose-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-rose-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-rose-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
               >
-                <div className="flex items-start justify-between">
-                  <ArrowRight className="h-5 w-5 text-gray-300 transition group-hover:translate-x-1 group-hover:text-rose-600" />
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition group-hover:bg-rose-600 group-hover:text-white">
+                    <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+                  </span>
                 </div>
-                <h3 className="mt-6 text-xl font-bold text-gray-900">{t.reviewsBadge}</h3>
-                
+                <div>
+                  <h3 className="text-2xl font-bold text-slate-900">{t.reviewsBadge}</h3>
+                  <p className="mt-3 text-sm text-slate-600">Read student feedback and success stories.</p>
+                </div>
               </Link>
             </div>
-        </section>
+          </section>
+        </div>
       </main>
 
       {/* Footer */}
