@@ -15,13 +15,34 @@ import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
 
 const SCATTER_IMAGES = [
-  { src: "/D.png", title: "Bundesrepublik Deutschland", description: "- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- Deutsch", className: "h-[60px] w-[60px] " },
-  { src: "/A.png", title: "Republik Österreich", description: "- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- Deutsch / österreichisches Deutsch", className: "h-[60px] w-[60px] " },
-  { src: "/CH.png", title: "Schweizerische Eidgenossenschaft", description: "- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- Deutsch (Schweizerdeutsch) /\n- Französisch / Italienisch / Rätoromanisch", className: "h-[60px] w-[60px] " },
-  { src: "/FL.png", title: "Fürstentum Liechtenstein", description: "- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- Deutsch / Schweizerdeutsch", className: "h-[60px] w-[60px] " },
-  { src: "/L.png", title: "Großherzogtum Luxemburg", description: "- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / Deutsch", className: "h-[60px] w-[60px] " },
+  { src: "/D.png", title: "Bundesrepublik Deutschland", description: "- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- **Deutsch**", className: "h-[60px] w-[60px] " },
+  { src: "/A.png", title: "Republik Österreich", description: "- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- **Deutsch** / österreichisches Deutsch", className: "h-[60px] w-[60px] " },
+  { src: "/CH.png", title: "Schweizerische Eidgenossenschaft", description: "- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- **Deutsch** (Schweizerdeutsch) /\n Französisch / Italienisch / Rätoromanisch", className: "h-[60px] w-[60px] " },
+  { src: "/FL.png", title: "Fürstentum Liechtenstein", description: "- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- **Deutsch** / Schweizerdeutsch", className: "h-[60px] w-[60px] " },
+  { src: "/L.png", title: "Großherzogtum Luxemburg", description: "- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / **Deutsch**", className: "h-[60px] w-[60px] " },
   ]
 
+function renderTooltipDescription(description: string) {
+  return description.split("\n").map((line, lineIndex) => {
+    const parts = line.split(/(\*\*.*?\*\*)/g)
+
+    return (
+      <p key={`${line}-${lineIndex}`} className="text-xs text-gray-600">
+        {parts.map((part, partIndex) => {
+          if (part.startsWith("**") && part.endsWith("**")) {
+            return (
+              <span key={`${part}-${partIndex}`} className="font-semibold text-gray-800">
+                {part.slice(2, -2)}
+              </span>
+            )
+          }
+
+          return <span key={`${part}-${partIndex}`}>{part}</span>
+        })}
+      </p>
+    )
+  })
+}
 
 const BG_IMAGES = [
     { src: "/Ph1.jpg", caption: "", position: "center bottom" },
@@ -208,7 +229,7 @@ export default function NewLandingPage({
                   <img src={img.src} alt={img.title} className="h-full w-full object-cover" />
                   <div className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-70 -translate-x-1/2 rounded-lg bg-white px-3 py-2 text-left text-sm leading-7 text-gray-800 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100 whitespace-pre-line text-xs leading-6 text-gray-600">
                     <p className="font-bold">{img.title}</p>
-                    <p className="text-xs text-gray-600">{img.description}</p>
+                    {renderTooltipDescription(img.description)}
                   </div>
                 </button>
               ))}
