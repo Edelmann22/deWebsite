@@ -408,24 +408,38 @@ export default function NewLandingPage({
 
         {/* Main page navigation */}
         <div className="border-y border-slate-200 bg-slate-50/80 backdrop-blur-sm">
-          <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-            <div className="mb-8 text-center">
-            
-            </div>
+          <section className="mx-auto max-w-5xl px-6 py-10 sm:px-4 lg:px-8">
+           
 
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="grid grid-cols-5 gap-5 md:grid-cols-7 xl:grid-cols-3">
               <Link
-                href="/offers"
-                className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-blue-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                href="/why-learn-german"
+                className="group flex min-h-[100px] flex-col justify-between rounded-3xl border border-violet-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-violet-500"
               >
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-violet-50 text-violet-600 transition group-hover:bg-violet-600 group-hover:text-white">
                     <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
                   </span>
                 </div>
                 <div>
+                  <h3 className="text-2xl font-bold text-slate-900">Was ist Deutscherei</h3>
+                  <h3 className="text-2xl font-bold text-slate-900">Wer bin ich</h3>
+                </div>
+              </Link>
+              
+              <Link
+                href="/offers"
+                className="group flex min-h-[220px] flex-col justify-between rounded-3xl border border-blue-100 bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                
+                <div>
                   <h3 className="text-2xl font-bold text-slate-900">{t.courses}</h3>
-                  <p className="mt-3 text-sm text-slate-600">Browse language programs and learning tracks.</p>
+                  
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-blue-600 transition group-hover:bg-blue-600 group-hover:text-white">
+                    <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1" />
+                  </span>
                 </div>
               </Link>
 
@@ -440,7 +454,7 @@ export default function NewLandingPage({
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900">{t.events}</h3>
-                  <p className="mt-3 text-sm text-slate-600">Discover workshops, meetups, and community events.</p>
+
                 </div>
               </Link>
 
@@ -455,9 +469,11 @@ export default function NewLandingPage({
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-slate-900">{t.reviewsBadge}</h3>
-                  <p className="mt-3 text-sm text-slate-600">Read student feedback and success stories.</p>
+
                 </div>
               </Link>
+
+              
             </div>
           </section>
         </div>

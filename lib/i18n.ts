@@ -378,7 +378,7 @@ export const translations = {
     notSet: "Nicht festgelegt",
     notAssigned: "Nicht zugewiesen",
     edit: "Bearbeiten",
-    events: "Veranstaltungen",
+    events: "Nachrichten\nVeranstaltungen",
     save: "Speichern",
     saving: "Speichert…",
     confirm: "Bestätigen",
