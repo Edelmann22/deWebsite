@@ -20,11 +20,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: '/deutschereiLogo.png',
+        url: '/flagAllesPNG.png',
         type: 'image/png',
       },
     ],
-    apple: '/deutschereiLogo.png',
+    apple: '/flagAllesPNG.png',
   },
 }
 

@@ -161,8 +161,8 @@ export default function HomePage() {
             <Image
               src="/deutschereiLogo.png"
               alt={`${t.appName} logo`}
-              width={144}
-              height={36}
+              width={174}
+              height={56}
               className="h-9 w-auto"
               priority
             />
