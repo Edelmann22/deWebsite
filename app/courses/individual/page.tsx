@@ -54,9 +54,9 @@ export default function IndividualCoursePage() {
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </Link>
@@ -72,7 +72,7 @@ export default function IndividualCoursePage() {
               ))}
             </select>
             <Button onClick={() => router.push("/auth")} size="sm"
-              className="bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
+              className="hidden sm:inline-flex bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
               Запишете се
             </Button>
           </div>

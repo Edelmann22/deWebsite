@@ -1,16 +1,28 @@
 import { NextResponse } from "next/server"
 import sql from "@/lib/db"
+import { requireRole } from "@/lib/auth"
 
 export async function POST() {
+  try {
+    await requireRole("admin")
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
   try {
     await sql`
       CREATE TABLE IF NOT EXISTS default_week_settings (
         id SERIAL PRIMARY KEY,
         timezone TEXT NOT NULL DEFAULT 'UTC',
         auto_generate BOOLEAN NOT NULL DEFAULT TRUE,
+        active_until DATE,
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       )
+    `
+
+    await sql`
+      ALTER TABLE default_week_settings ADD COLUMN IF NOT EXISTS active_until DATE
     `
 
     await sql`

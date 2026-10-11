@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     await requireRole("admin")
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ error: "Нямаш достъп" }, { status: 403 })
   }
 
   const body = await req.json().catch(() => ({}))
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   } = body ?? {}
 
   if (!day_of_week || !start_time || !end_time || !student_user_id) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+    return NextResponse.json({ error: "Липсват задължителни полета" }, { status: 400 })
   }
   if (day_of_week < 1 || day_of_week > 7) {
     return NextResponse.json({ error: "day_of_week must be between 1 and 7" }, { status: 400 })
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       LIMIT 1
     `
     if (!student) {
-      return NextResponse.json({ error: "Selected student account was not found" }, { status: 400 })
+      return NextResponse.json({ error: "Избраният ученически акаунт не е намерен" }, { status: 400 })
     }
 
     const [row] = await sql`
@@ -88,10 +88,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const message =
       error instanceof Error && /relation "default_week_lessons" does not exist/i.test(error.message)
-        ? "Default week tables are missing. Run the default-week migration."
+        ? "Липсват таблиците за седмицата по подразбиране. Стартирай миграцията default-week."
         : error instanceof Error
           ? error.message
-          : "Failed to create default week lesson"
+          : "Неуспешно добавяне на урок по подразбиране"
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

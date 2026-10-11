@@ -15,11 +15,11 @@ import ReviewsSection from "@/components/sections/reviews-section"
 import EventsSection from "@/components/sections/events-section"
 
 const SCATTER_IMAGES = [
-  { src: "/D.png", title: "Bundesrepublik Deutschland", description: "- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- **Deutsch**", className: "h-[60px] w-[60px] " },
-  { src: "/A.png", title: "Republik Österreich", description: "- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- **Deutsch** / österreichisches Deutsch", className: "h-[60px] w-[60px] " },
-  { src: "/CH.png", title: "Schweizerische Eidgenossenschaft", description: "- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- **Deutsch** (Schweizerdeutsch) /\n Französisch / Italienisch / Rätoromanisch", className: "h-[60px] w-[60px] " },
-  { src: "/FL.png", title: "Fürstentum Liechtenstein", description: "- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- **Deutsch** / Schweizerdeutsch", className: "h-[60px] w-[60px] " },
-  { src: "/L.png", title: "Großherzogtum Luxemburg", description: "- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / **Deutsch**", className: "h-[60px] w-[60px] " },
+  { src: "/D.png", title: "Bundesrepublik Deutschland", description: "- über 83 Millionen Einwohner\n- 16 Bundesländer\n- Hauptstadt Berlin\n- **Deutsch**", className: "h-11 w-11" },
+  { src: "/A.png", title: "Republik Österreich", description: "- rund 9 Millionen Einwohner\n- 9 Bundesländer\n- Hauptstadt Wien\n- **Deutsch** / österreichisches Deutsch", className: "h-11 w-11" },
+  { src: "/CH.png", title: "Schweizerische Eidgenossenschaft", description: "- über 9 Millionen Einwohner\n- 26 Kantone - Hauptstadt Bern\n- **Deutsch** (Schweizerdeutsch) /\n Französisch / Italienisch / Rätoromanisch", className: "h-11 w-11" },
+  { src: "/FL.png", title: "Fürstentum Liechtenstein", description: "- über 40 Tausend Einwohner\n- der sechstkleinste Staat der Welt\n- Hauptstadt Vaduz\n- **Deutsch** / Schweizerdeutsch", className: "h-11 w-11" },
+  { src: "/L.png", title: "Großherzogtum Luxemburg", description: "- fast 700 Tausend Einwohner\n- der zweitkleinste Staat der EU\n- Hauptstadt Luxemburg\n- Luxemburgisch / Französisch / **Deutsch**", className: "h-11 w-11" },
   ]
 
 function renderTooltipDescription(description: string) {
@@ -70,7 +70,13 @@ function BackgroundSlideshow() {
 
     return (
         <div className="pointer-events-none fixed absolute inset-0 z-0 bg-white">
-            {BG_IMAGES.map((image, i) => (
+            {BG_IMAGES.map((image, i) => {
+                // Only mount the slide fading out, the visible one and the next one,
+                // so the browser doesn't download every photo up front.
+                const total = BG_IMAGES.length
+                const isNear = i === current || i === (current + 1) % total || i === (current - 1 + total) % total
+                if (!isNear) return null
+                return (
                 <div
                     key={image.src}
                     // FIX: Explicitly forced full dimensions and a clean white fallback on the wrapper
@@ -95,7 +101,8 @@ function BackgroundSlideshow() {
                         }}
                     />
                 </div>
-            ))}
+                )
+            })}
             {/* The semi-transparent dark shade layer */}
             <div className="absolute inset-0 bg-black/55" />
             
@@ -210,9 +217,9 @@ export default function NewLandingPage({
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={174}
-                height={56}
-                className="h-9 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </button>
@@ -224,7 +231,7 @@ export default function NewLandingPage({
                   type="button"
                   key={img.src}
                   aria-label={`Learn about ${img.title}`}
-                  className={`group relative w-20 shrink-0 overflow-visible rounded-md transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 ${img.className}`}
+                  className={`group relative shrink-0 overflow-visible rounded-md transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 ${img.className}`}
                 >
                   <img src={img.src} alt={img.title} className="h-full w-full object-cover" />
                   <div className="pointer-events-none absolute left-1/2 top-full z-30 mt-2 w-70 -translate-x-1/2 rounded-lg bg-white px-3 py-2 text-left text-sm leading-7 text-gray-800 shadow-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100 whitespace-pre-line text-xs leading-6 text-gray-600">
@@ -293,7 +300,7 @@ export default function NewLandingPage({
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value as Language)}
                 className="h-9 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                aria-label="Website language"
+                aria-label={t.language}
               >
                 {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                   <option key={value} value={value}>
@@ -413,13 +420,13 @@ export default function NewLandingPage({
     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
       <Link
         href="/why-learn-german"
-        className="group flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        className="group flex min-h-[120px] flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
       >
         <div>
           <h3 className="text-lg font-bold text-slate-900">Was ist Deutscherei</h3>
           <h3 className="text-lg font-bold text-slate-900">Wer bin ich</h3>
         </div>
-        <div className="flex justify-start pt-2">
+        <div className="flex justify-end pt-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition group-hover:text-slate-900">
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
@@ -428,12 +435,12 @@ export default function NewLandingPage({
 
       <Link
         href="/offers"
-        className="group flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        className="group flex min-h-[120px] flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
       >
         <div>
           <h3 className="text-lg font-bold text-slate-900">{t.courses}</h3>
         </div>
-        <div className="flex justify-start pt-2">
+        <div className="flex justify-end pt-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition group-hover:text-slate-900">
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
@@ -442,12 +449,12 @@ export default function NewLandingPage({
 
       <Link
         href="/events"
-        className="group flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        className="group flex min-h-[120px] flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
       >
         <div>
           <h3 className="text-lg font-bold text-slate-900">{t.events}</h3>
         </div>
-       <div className="flex justify-start pt-2">
+       <div className="flex justify-end pt-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition group-hover:text-slate-900">
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
@@ -456,12 +463,12 @@ export default function NewLandingPage({
 
       <Link
         href="/reviews"
-        className="group flex min-h-[160px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
+        className="group flex min-h-[120px] flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-[1px] transition hover:border-slate-300 hover:bg-white/40 focus:outline-none focus:ring-2 focus:ring-slate-400"
       >
         <div>
           <h3 className="text-lg font-bold text-slate-900">{t.reviewsBadge}</h3>
         </div>
-        <div className="flex justify-start pt-2">
+        <div className="flex justify-end pt-2">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition group-hover:text-slate-900">
             <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
         </span>
@@ -482,13 +489,15 @@ export default function NewLandingPage({
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="flex items-center gap-2.5 mb-4 hover:opacity-80 transition-opacity text-left"
               >
-                <Image
-                  src="/deutschereiLogo.png"
-                  alt={`${t.appName} logo`}
-                  width={144}
-                  height={36}
-                  className="h-9 w-auto"
-                />
+                <span className="rounded-lg bg-white px-3 py-1.5">
+                  <Image
+                    src="/deutschereiLogo.png"
+                    alt={`${t.appName} logo`}
+                    width={100}
+                    height={35}
+                    className="h-[35px] w-auto max-w-none shrink-0"
+                  />
+                </span>
               </button>
               <p className="text-gray-300 mb-4 max-w-md">
                 {t.footerDescription}
@@ -537,7 +546,7 @@ export default function NewLandingPage({
             <div>
               <h3 className="font-semibold mb-4">{t.contact}</h3>
               <ul className="space-y-2 text-gray-300">
-                <li>{t.phoneLabel} <a href="tel:+359888559913" className="hover:text-white transition-colors">+359 888 559 913</a></li>
+                
                 <li>
                   <a 
                     href="https://maps.app.goo.gl/Ghicy5quB8bFGZe48"
@@ -548,13 +557,13 @@ export default function NewLandingPage({
                     {t.location}
                   </a>
                 </li>
-                <li>{t.emailLabel} <a href="mailto:rosi@vasileva.gmail.com" className="hover:text-white transition-colors">rosi@vasileva.gmail.com</a></li>
+                <li>{t.emailLabel} <a href="mailto:rosi_vasseva@abv.bg" className="hover:text-white transition-colors">rosi_vasseva@abv.bg</a></li>
               </ul>
             </div>
           </div>
 
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 {t.appName}. {t.allRightsReserved}.</p>
+            <p>&copy; {new Date().getFullYear()} {t.appName}. {t.allRightsReserved}.</p>
           </div>
         </div>
       </footer>

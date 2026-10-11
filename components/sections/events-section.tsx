@@ -18,9 +18,13 @@ interface EventsSectionProps {
   onViewEventDetails: (eventId: number) => void
   t: TranslationDictionary
   locale: string
+  // Heading above the cards; defaults to the generic events title.
+  title?: string
+  // How many events to show; undefined shows all of them.
+  limit?: number
 }
 
-export default function EventsSection({ events, eventsLoading, onViewEventDetails, t, locale }: EventsSectionProps) {
+export default function EventsSection({ events, eventsLoading, onViewEventDetails, t, locale, title, limit }: EventsSectionProps) {
   const router = useRouter()
   
   const [loadingEventId, setLoadingEventId] = useState<number | null>(null)
@@ -65,26 +69,23 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
     <section id="events" className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t.eventsTitle || "Upcoming Events"}</h2>
-         {/*} <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            {t.eventsSubtitle || "Stay updated with our latest announcements, workshops, and special events."}
-          </p>*/}
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{title ?? t.eventsTitle}</h2>
         </div>
 
         {eventsLoading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">{t.eventsLoading || "Loading events..."}</p>
+            <p className="mt-4 text-gray-600">{t.eventsLoading}</p>
           </div>
         ) : sortedEvents.length === 0 ? (
           <div className="text-center py-12">
             <CalendarDays className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t.eventsEmpty || "No events yet"}</h3>
-            <p className="text-gray-600">Check back soon for upcoming events and announcements.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t.eventsEmpty}</h3>
+            <p className="text-gray-600">{t.eventsSubtitle}</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedEvents.slice(0, 6).map((event) => (
+            {sortedEvents.slice(0, limit ?? sortedEvents.length).map((event) => (
               <Card
                 key={event.id} 
                 className="relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-blue-300"
@@ -114,7 +115,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="secondary" className="text-xs">
-                      {formatEventDate(event.event_date || "", locale) || "No date set"}
+                      {formatEventDate(event.event_date || "", locale) || t.eventDate}
                     </Badge>
                     <span className="text-xs text-gray-500">
                       {new Date(event.created_at).toLocaleDateString(locale, {
@@ -136,7 +137,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
                     <span className="text-sm text-gray-500">
                       {event.images && event.images.length > 0 && (
                         <span className="flex items-center gap-1">
-                          📷 {event.images.length} {event.images.length === 1 ? 'photo' : 'photos'}
+                          📷 {event.images.length} {event.images.length === 1 ? t.eventPhoto : t.eventPhotos}
                         </span>
                       )}
                     </span>
@@ -165,7 +166,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
           </div>
         )}
 
-        {sortedEvents.length > 6 && (
+        {limit !== undefined && sortedEvents.length > limit && (
           <div className="text-center mt-12">
             <Button 
               variant="outline" 
@@ -173,7 +174,7 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
               className="rounded-full px-8"
               onClick={() => onViewEventDetails(-1)} // Special signal to show all events
             >
-              View all events
+              {t.viewAllEvents}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </div>

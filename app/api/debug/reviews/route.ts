@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server"
 import sql from "@/lib/db"
+import { requireRole } from "@/lib/auth"
 
 export async function GET() {
+  try {
+    await requireRole("admin")
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
+
   try {
     // Check if table exists
     const tableCheck = await sql`

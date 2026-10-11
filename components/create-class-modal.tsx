@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import type { ClassRow } from "@/lib/db"
-import { X, Plus, Calendar } from "lucide-react"
+import { X, Plus, Calendar, Laptop } from "lucide-react"
 import {
   CLASS_COLOR_OPTIONS,
   CLASS_DETAILS_BACKGROUND_COLOR_OPTIONS,
@@ -16,6 +16,14 @@ import {
 } from "@/lib/class-colors"
 import type { TranslationDictionary } from "@/lib/i18n"
 import type { StudentOption } from "@/hooks/use-students"
+import {
+  SCHEDULE_PERIODS,
+  findSchedulePeriodByStart,
+  getDefaultSchedulePeriod,
+  getSchedulePeriodLabel,
+  getScheduleTimes,
+  isValidSchedulePeriod,
+} from "@/lib/schedule-periods"
 
 type Props = {
   date: string   // YYYY-MM-DD pre-filled
@@ -39,8 +47,15 @@ function normalizeDateInput(value: string) {
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
 }
 
-export default function CreateClassModal({ date, initialStartTime, initialEndTime, onCreate, onClose, t, students }: Props) {
+// The grid only passes a start time, so the end time comes from the matching period.
+function resolveInitialTimes(startTime?: string) {
+  const period = startTime ? findSchedulePeriodByStart(startTime) : null
+  return period ?? getScheduleTimes(getDefaultSchedulePeriod().period)!
+}
+
+export default function CreateClassModal({ date, initialStartTime, onCreate, onClose, t, students }: Props) {
   const normalizedDate = normalizeDateInput(date)
+  const initialTimes = resolveInitialTimes(initialStartTime)
   const hasStudents = students.length > 0
   const [form, setForm] = useState({
     title: students[0]?.nickname ?? "",
@@ -49,8 +64,8 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
     details_background_color: DEFAULT_CLASS_DETAILS_BACKGROUND_COLOR,
     slot_color: DEFAULT_CLASS_SLOT_COLOR,
     date: normalizedDate,
-    start_time: initialStartTime ?? "09:00",
-    end_time: initialEndTime ?? "10:00",
+    start_time: initialTimes.start,
+    end_time: initialTimes.end,
     lesson_notes: "",
     homework: "",
     online: false,
@@ -58,41 +73,38 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
 
-  // Color preview component
-  const ColorPreview = ({ title, bgColor, detailsBgColor, slotColor }: { 
-    title: string; 
-    bgColor: string; 
-    detailsBgColor: string; 
-    slotColor: string; 
+  // Mirrors how the class is drawn in the calendar grid and the details panel
+  const ColorPreview = ({ title, color, detailsBgColor, slotColor, online }: {
+    title: string
+    color: string
+    detailsBgColor: string
+    slotColor: string
+    online: boolean
   }) => (
-    <div className="mt-2 p-3 rounded-lg border border-gray-200 bg-gray-50">
-      <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-        <Calendar size={12} />
-        Calendar Preview
-      </div>
-      
-      {/* Main calendar item */}
-      <div 
-        className="p-2 rounded-md text-white text-xs font-medium text-center mb-2"
-        style={{ backgroundColor: bgColor }}
-      >
-        <div className="mb-1">{title}</div>
-        <div 
-          className="inline-block px-2 py-1 rounded text-xs"
-          style={{ backgroundColor: slotColor }}
-        >
-          Time Slot
+    <div className="grid grid-cols-2 gap-3">
+      <div>
+        <div className="mb-1.5 flex items-center gap-1 text-xs text-muted-foreground">
+          <Calendar size={12} />
+          {t.calendarSlotColor}
+        </div>
+        <div className="relative min-h-[60px] border border-border p-1" style={{ backgroundColor: slotColor }}>
+          <div
+            className="rounded border-l-[3px] px-1.5 py-1 text-xs font-medium leading-snug shadow-[0_1px_1px_rgb(0_0_0/0.06)]"
+            style={{ backgroundColor: detailsBgColor, borderLeftColor: color, color }}
+          >
+            <span className="flex min-w-0 items-center gap-1">
+              {online && <Laptop size={12} className="shrink-0 opacity-80" />}
+              <span className="truncate">{title}</span>
+            </span>
+          </div>
         </div>
       </div>
-      
-      {/* Details panel preview */}
-      <div className="text-xs text-gray-600 mb-1">Details Panel:</div>
-      <div 
-        className="p-2 rounded text-xs"
-        style={{ backgroundColor: detailsBgColor }}
-      >
-        <div className="font-medium mb-1" style={{ color: '#1f2937' }}>Lesson Details</div>
-        <div style={{ color: '#4b5563' }}>Notes and homework info...</div>
+      <div>
+        <div className="mb-1.5 text-xs text-muted-foreground">{t.detailsBackground}</div>
+        <div className="min-h-[60px] rounded-md border border-border p-2 text-xs" style={{ backgroundColor: detailsBgColor }}>
+          <div className="font-semibold" style={{ color }}>{title}</div>
+          <div className="mt-0.5 text-gray-600">{getSchedulePeriodLabel(form.start_time, form.end_time)}</div>
+        </div>
       </div>
     </div>
   )
@@ -103,10 +115,8 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
       title: students.find((student) => student.id === current.student_user_id)?.nickname ?? current.title,
       student_user_id: current.student_user_id || students[0]?.id || 0,
       date: normalizedDate,
-      start_time: initialStartTime ?? current.start_time,
-      end_time: initialEndTime ?? current.end_time,
     }))
-  }, [normalizedDate, initialStartTime, initialEndTime, students])
+  }, [normalizedDate, students])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -114,6 +124,10 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
     if (!form.student_user_id) { setError(t.classTitleRequired); return }
     const safeDate = normalizeDateInput(form.date)
     if (!safeDate) { setError(t.chooseValidDate); return }
+    if (!isValidSchedulePeriod(form.start_time, form.end_time)) {
+      setError("Моля, избери един от наличните часове.")
+      return
+    }
     setSaving(true)
     setError("")
     try {
@@ -197,55 +211,53 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.startTime}</label>
-              <input
-                type="time"
-                step={900}
-                value={form.start_time}
-                onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                className="border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                pattern="[0-9]{2}:[0-9]{2}"
-                min="06:00"
-                max="22:00"
+              <select
+                value={getSchedulePeriodLabel(form.start_time, form.end_time)}
+                onChange={(e) => {
+                  const times = getScheduleTimes(e.target.value)
+                  if (!times) return
+                  setForm((current) => ({ ...current, start_time: times.start, end_time: times.end }))
+                }}
+                className="border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 required
-                data-time-format="24h"
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.endTime}</label>
-              <input
-                type="time"
-                step={900}
-                value={form.end_time}
-                onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                className="border border-border rounded-lg px-3 py-2 text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring [appearance:textfield] [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                pattern="[0-9]{2}:[0-9]{2}"
-                min="06:00"
-                max="22:00"
-                required
-                data-time-format="24h"
-              />
+              >
+                <option value="" disabled>—</option>
+                {SCHEDULE_PERIODS.map((period) => (
+                  <option key={period.period} value={period.period}>
+                    {period.period}
+                  </option>
+                ))}
+              </select>
             </div>
  
-            <div>
-                <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.onlineOrInPerson}</label>
-                <div className="flex items-center gap-2">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.online}</label>
-                    <input 
-                        type="radio"
-                        name="mode"
-                        value="online"
-                        onChange={() => setForm({ ...form, online: true })}
-                    />
-                    <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.inPerson}</label>
-                    <input 
-                        type="radio"
-                        name="mode"
-                        value="in-person"
-                        onChange={() => setForm({ ...form, online: false })}
-                    />
-                </div>
+            <div className="flex flex-col gap-1 col-span-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.onlineOrInPerson}</span>
+              <div className="flex items-center gap-5 text-sm text-foreground">
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="in-person"
+                    checked={!form.online}
+                    onChange={() => setForm((current) => ({ ...current, online: false }))}
+                    className="shadow-none"
+                  />
+                  {t.inPerson}
+                </label>
+                <label className="flex cursor-pointer items-center gap-2">
+                  <input
+                    type="radio"
+                    name="mode"
+                    value="online"
+                    checked={form.online}
+                    onChange={() => setForm((current) => ({ ...current, online: true }))}
+                    className="shadow-none"
+                  />
+                  {t.online}
+                </label>
+              </div>
             </div>
           </div>
 
@@ -253,12 +265,12 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.calendarColor}</label>
             <div className="flex flex-wrap gap-2">
               {CLASS_COLOR_OPTIONS.map((option) => {
-                const selected = form.color === option.value
+                const selected = form.color.toLowerCase() === option.value
                 return (
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setForm({ ...form, color: option.value })}
+                    onClick={() => setForm((current) => ({ ...current, color: option.value }))}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                       selected ? "border-foreground bg-secondary text-foreground" : "border-border bg-background text-muted-foreground hover:border-foreground/40"
                     }`}
@@ -278,12 +290,12 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.detailsBackground}</label>
             <div className="flex flex-wrap gap-2">
               {CLASS_DETAILS_BACKGROUND_COLOR_OPTIONS.map((option) => {
-                const selected = form.details_background_color === option.value
+                const selected = form.details_background_color.toLowerCase() === option.value
                 return (
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setForm({ ...form, details_background_color: option.value })}
+                    onClick={() => setForm((current) => ({ ...current, details_background_color: option.value }))}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                       selected ? "border-foreground bg-secondary text-foreground" : "border-border bg-background text-muted-foreground hover:border-foreground/40"
                     }`}
@@ -303,12 +315,12 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
             <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t.calendarSlotColor}</label>
             <div className="flex flex-wrap gap-2">
               {CLASS_SLOT_COLOR_OPTIONS.map((option) => {
-                const selected = form.slot_color === option.value
+                const selected = form.slot_color.toLowerCase() === option.value
                 return (
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => setForm({ ...form, slot_color: option.value })}
+                    onClick={() => setForm((current) => ({ ...current, slot_color: option.value }))}
                     className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                       selected ? "border-foreground bg-secondary text-foreground" : "border-border bg-background text-muted-foreground hover:border-foreground/40"
                     }`}
@@ -328,10 +340,11 @@ export default function CreateClassModal({ date, initialStartTime, initialEndTim
         {/* Combined Color Preview */}
         <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-border">
           <ColorPreview 
-            title={students.find(s => s.id === form.student_user_id)?.nickname || "Lesson"} 
-            bgColor={form.color} 
-            detailsBgColor={form.details_background_color}
-            slotColor={form.slot_color}
+            title={students.find(s => s.id === form.student_user_id)?.nickname || "Урок"}
+            color={normalizeClassColor(form.color)}
+            detailsBgColor={normalizeClassDetailsBackgroundColor(form.details_background_color)}
+            slotColor={normalizeClassSlotColor(form.slot_color)}
+            online={form.online}
           />
         </div>
 

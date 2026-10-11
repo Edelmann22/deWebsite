@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import ReviewsSection from "@/components/sections/reviews-section"
 import { useSession } from "@/hooks/use-session"
 import { useLanguage } from "@/hooks/use-language"
@@ -25,7 +25,7 @@ export default function ReviewsPage() {
   if (sessionLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-gray-500">Loading...</div>
+        <div className="text-gray-500">{t.loading}</div>
       </div>
     )
   }
@@ -36,15 +36,24 @@ export default function ReviewsPage() {
       <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
+            <Link href="/" className="transition-opacity hover:opacity-80">
+              <Image
+                src="/deutschereiLogo.png"
+                alt={`${t.appName} logo`}
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
+                priority
+              />
+            </Link>
+            <button
+              type="button"
               onClick={handleBack}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft size={16} />
-              Back to Calendar
-            </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Student Reviews</h1>
+              <ArrowLeft className="h-4 w-4" />
+              {t.home}
+            </button>
           </div>
 
           {/* Language Selector */}
@@ -52,7 +61,7 @@ export default function ReviewsPage() {
             value={language}
             onChange={(e) => setLanguage(e.target.value as Language)}
             className="h-9 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Website language"
+            aria-label={t.language}
           >
             {Object.entries(LANGUAGE_META).map(([value, meta]) => (
               <option key={value} value={value}>

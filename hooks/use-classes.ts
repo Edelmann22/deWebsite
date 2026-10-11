@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import type { ClassRow } from "@/lib/db"
 
 export type { ClassRow }
@@ -8,8 +8,11 @@ export type { ClassRow }
 export function useClasses(from: string, to: string, enabled = true) {
   const [classes, setClasses] = useState<ClassRow[]>([])
   const [loading, setLoading] = useState(true)
+  // Id of the latest request, so a slow older response can't overwrite a newer one.
+  const requestId = useRef(0)
 
   const fetchClasses = useCallback(async () => {
+    const id = ++requestId.current
     if (!enabled) {
       setClasses([])
       setLoading(false)
@@ -17,16 +20,17 @@ export function useClasses(from: string, to: string, enabled = true) {
     }
 
     setLoading(true)
-    const params = new URLSearchParams({ from, to })
-    const res = await fetch(`/api/classes?${params.toString()}`)
-    if (!res.ok) {
-      setClasses([])
-      setLoading(false)
-      return
+    try {
+      const params = new URLSearchParams({ from, to })
+      const res = await fetch(`/api/classes?${params.toString()}`)
+      const data = res.ok ? await res.json() : []
+      if (id !== requestId.current) return
+      setClasses(Array.isArray(data) ? data : [])
+    } catch {
+      if (id === requestId.current) setClasses([])
+    } finally {
+      if (id === requestId.current) setLoading(false)
     }
-    const data = await res.json()
-    setClasses(Array.isArray(data) ? data : [])
-    setLoading(false)
   }, [enabled, from, to])
 
   useEffect(() => {

@@ -11,6 +11,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     SELECT
       id,
       title,
+      category,
       content_html,
       images,
       event_date::text AS event_date,
@@ -34,13 +35,18 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
   const { id } = await params
   const body = await req.json()
-  const { title, content_html, images, event_date } = body
+  const { title, category, content_html, images, event_date } = body
   const hasImages = Object.prototype.hasOwnProperty.call(body, "images")
   const hasEventDate = Object.prototype.hasOwnProperty.call(body, "event_date")
+  const hasCategory = Object.prototype.hasOwnProperty.call(body, "category")
 
   const [row] = await sql`
     UPDATE events SET
       title = COALESCE(${title ?? null}, title),
+      category = CASE
+        WHEN ${hasCategory} THEN ${category ?? "events"}
+        ELSE category
+      END,
       content_html = COALESCE(${content_html ?? null}, content_html),
       images = CASE
         WHEN ${hasImages} THEN ${Array.isArray(images) ? images : []}
@@ -55,6 +61,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     RETURNING
       id,
       title,
+      category,
       content_html,
       images,
       event_date::text AS event_date,

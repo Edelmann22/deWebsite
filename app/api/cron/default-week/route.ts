@@ -10,7 +10,13 @@ async function resolveSystemAdminId() {
   return row?.id ?? null
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  // Vercel Cron sends "Authorization: Bearer $CRON_SECRET" when CRON_SECRET is set.
+  const secret = process.env.CRON_SECRET
+  if (secret && req.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
   try {
     const settings = await getDefaultWeekSettings()
     if (!settings.auto_generate) {
@@ -27,6 +33,7 @@ export async function GET() {
       now,
       timeZone: settings.timezone,
       createdByUserId: systemAdminId,
+      activeUntil: settings.active_until,
     })
 
     return NextResponse.json({ ...result, timeZone: settings.timezone })

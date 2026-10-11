@@ -35,10 +35,13 @@ export function useEvents(enabled = true, limit?: number) {
     
     try {
       const url = limit ? `/api/events?limit=${limit}` : "/api/events"
-      const res = await fetch(url, { 
-        cache: "no-store",
-      })
-      
+      let res = await fetch(url, { cache: "no-store" })
+      // The database can fail the first query after waking from idle; retry once.
+      if (res.status >= 500) {
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        res = await fetch(url, { cache: "no-store" })
+      }
+
       if (!res.ok) {
         console.error("API response not ok:", res.status)
         setEvents([])

@@ -12,11 +12,13 @@ import {
 import { addDays } from "@/lib/timezone"
 import type { ClassRow } from "@/lib/db"
 import CalendarGrid from "@/components/calendar-grid"
+import { findSchedulePeriodByStart } from "@/lib/schedule-periods"
 import DefaultWeekLessonModal, { type DefaultWeekLessonDraft } from "@/components/default-week-lesson-modal"
 
 type DefaultWeekSettings = {
   timezone: string
   auto_generate: boolean
+  active_until: string | null
 }
 
 type DefaultWeekLesson = {
@@ -133,7 +135,7 @@ export default function DefaultWeekPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => null)
         if (!active) return
-        setError(data?.error ?? "Failed to load default week settings.")
+        setError(data?.error ?? "Неуспешно зареждане на настройките за седмицата по подразбиране.")
         return
       }
       const data = await res.json()
@@ -159,34 +161,49 @@ export default function DefaultWeekPage() {
     })
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? "Failed to update settings.")
+      setError(data?.error ?? "Неуспешно запазване на настройките.")
       setSavingSettings(false)
       return
     }
     const data = await res.json()
     setSettings(data)
-    setStatus("Settings updated.")
+    setStatus("Настройките са запазени.")
     setSavingSettings(false)
   }
 
   const handleGenerate = async () => {
+    const until = settings?.active_until || null
+    const rangeStart = getNextWeekMonday(settings?.timezone ?? "UTC")
+    if (until && until < rangeStart) {
+      setError(`Крайната дата трябва да е на или след ${rangeStart}.`)
+      return
+    }
+    const confirmMessage = until
+      ? `Всички часове от ${rangeStart} до ${until} ще бъдат заменени със седмицата по подразбиране. Продължаване?`
+      : `Всички часове в седмицата от ${rangeStart} ще бъдат заменени със седмицата по подразбиране. Продължаване?`
+    if (!window.confirm(confirmMessage)) return
+
     setGenerating(true)
     setStatus(null)
     setError(null)
-    const res = await fetch("/api/default-week/generate", { method: "POST" })
+    const res = await fetch("/api/default-week/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(until ? { until } : {}),
+    })
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? "Failed to generate upcoming week.")
+      setError(data?.error ?? "Неуспешно генериране на седмицата.")
       setGenerating(false)
       return
     }
     const data = await res.json()
     setStatus(
       data.skipped
-        ? `Skipped: ${data.reason ?? "Already generated"}`
+        ? `Пропуснато: ${data.reason ?? "Вече е генерирано"}`
         : data.deleted > 0
-          ? `Replaced ${data.deleted} existing classes with ${data.created} new classes for ${data.weekStart} to ${data.weekEnd}.`
-          : `Generated ${data.created} classes for ${data.weekStart} to ${data.weekEnd}.`
+          ? `Заменени ${data.deleted} съществуващи часа с ${data.created} нови за периода ${data.weekStart} – ${data.weekEnd}.`
+          : `Създадени ${data.created} часа за периода ${data.weekStart} – ${data.weekEnd}.`
     )
     setGenerating(false)
   }
@@ -195,8 +212,9 @@ export default function DefaultWeekPage() {
     const timeZone = settings?.timezone ?? "UTC"
     const draft = createLessonDraft(students)
     draft.day_of_week = dayOfWeekFromDate(dateStr, timeZone)
-    draft.start_time = startTime
-    draft.end_time = addMinutesToTime(startTime, 60)
+    const period = findSchedulePeriodByStart(startTime)
+    draft.start_time = period?.start ?? startTime
+    draft.end_time = period?.end ?? addMinutesToTime(startTime, 90)
     setLessonModalInitial(draft)
     setLessonModalMode("create")
     setEditingLessonId(null)
@@ -223,7 +241,7 @@ export default function DefaultWeekPage() {
 
   const handleSaveLesson = async (draft: DefaultWeekLessonDraft) => {
     if (!draft.student_user_id) {
-      setError("Select a student first.")
+      setError("Първо избери ученик.")
       return
     }
     setSavingLesson(true)
@@ -237,13 +255,13 @@ export default function DefaultWeekPage() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => null)
-        setError(data?.error ?? "Failed to add lesson.")
+        setError(data?.error ?? "Неуспешно добавяне на урок.")
         setSavingLesson(false)
         return
       }
       const lesson = await res.json()
       setLessons((prev) => [...prev, lesson].sort((a, b) => a.day_of_week - b.day_of_week || a.start_time.localeCompare(b.start_time)))
-      setStatus("Lesson added.")
+      setStatus("Урокът е добавен.")
     } else if (editingLessonId !== null) {
       const res = await fetch(`/api/default-week/lessons/${editingLessonId}`, {
         method: "PATCH",
@@ -252,13 +270,13 @@ export default function DefaultWeekPage() {
       })
       if (!res.ok) {
         const data = await res.json().catch(() => null)
-        setError(data?.error ?? "Failed to update lesson.")
+        setError(data?.error ?? "Неуспешно запазване на урока.")
         setSavingLesson(false)
         return
       }
       const updated = await res.json()
       setLessons((prev) => prev.map((lesson) => (lesson.id === editingLessonId ? updated : lesson)))
-      setStatus("Lesson updated.")
+      setStatus("Урокът е запазен.")
     }
     setSavingLesson(false)
     setLessonModalOpen(false)
@@ -272,13 +290,13 @@ export default function DefaultWeekPage() {
     const res = await fetch(`/api/default-week/lessons/${editingLessonId}`, { method: "DELETE" })
     if (!res.ok) {
       const data = await res.json().catch(() => null)
-      setError(data?.error ?? "Failed to delete lesson.")
+      setError(data?.error ?? "Неуспешно изтриване на урока.")
       return
     }
     setLessons((prev) => prev.filter((lesson) => lesson.id !== editingLessonId))
     setLessonModalOpen(false)
     setEditingLessonId(null)
-    setStatus("Lesson deleted.")
+    setStatus("Урокът е изтрит.")
   }
 
   const referenceWeekStart = useMemo(() => {
@@ -295,7 +313,7 @@ export default function DefaultWeekPage() {
     const weekStart = getNextWeekMonday(timeZone)
     return lessons.map((lesson) => ({
       id: lesson.id,
-      title: studentLookup.get(lesson.student_user_id) ?? "Lesson",
+      title: studentLookup.get(lesson.student_user_id) ?? "Урок",
       student_user_id: lesson.student_user_id,
       language: lesson.language,
       teacher: lesson.teacher,
@@ -317,7 +335,7 @@ export default function DefaultWeekPage() {
     return (
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-5xl px-4 py-16">
-          <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">Loading...</div>
+          <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">Зареждане...</div>
         </div>
       </div>
     )
@@ -328,8 +346,8 @@ export default function DefaultWeekPage() {
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-5xl px-4 py-16">
           <div className="rounded-2xl border border-border bg-card p-6">
-            <h1 className="text-xl font-semibold text-foreground">Admin access required</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Only administrators can edit the default week.</p>
+            <h1 className="text-xl font-semibold text-foreground">Необходим е администраторски достъп</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Само администратори могат да редактират седмицата по подразбиране.</p>
           </div>
         </div>
       </div>
@@ -341,15 +359,15 @@ export default function DefaultWeekPage() {
       <div className="mx-auto max-w-6xl px-4 py-12 flex flex-col gap-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Default Weekly Schedule</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Define the weekly template that auto-generates future weeks.</p>
+            <h1 className="text-3xl font-bold text-foreground">Седмичен график по подразбиране</h1>
+            <p className="mt-2 text-sm text-muted-foreground">Задай седмичния шаблон, от който автоматично се създават следващите седмици.</p>
           </div>
           <button
             type="button"
             onClick={() => router.push("/")}
             className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
           >
-            Back to calendar
+            Обратно към календара
           </button>
         </div>
 
@@ -365,10 +383,10 @@ export default function DefaultWeekPage() {
         )}
 
         <section className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="text-xl font-semibold text-foreground">Settings</h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-[2fr,1fr]">
+          <h2 className="text-xl font-semibold text-foreground">Настройки</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3 md:items-end">
             <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-              Time zone
+              Часова зона
               <input
                 value={settings?.timezone ?? ""}
                 onChange={(e) => setSettings((prev) => (prev ? { ...prev, timezone: e.target.value } : prev))}
@@ -376,14 +394,37 @@ export default function DefaultWeekPage() {
                 className="h-11 rounded-xl border border-border bg-background px-4 text-sm"
               />
             </label>
-            <label className="flex items-center gap-3 text-sm font-semibold text-foreground mt-6 md:mt-0">
+            <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
+              Прилагай седмицата по подразбиране до
+              <span className="flex gap-2">
+                <input
+                  type="date"
+                  value={settings?.active_until ?? ""}
+                  min={getNextWeekMonday(settings?.timezone ?? "UTC")}
+                  onChange={(e) =>
+                    setSettings((prev) => (prev ? { ...prev, active_until: e.target.value || null } : prev))
+                  }
+                  className="h-11 min-w-0 flex-1 rounded-xl border border-border bg-background px-4 text-sm"
+                />
+                {settings?.active_until && (
+                  <button
+                    type="button"
+                    onClick={() => setSettings((prev) => (prev ? { ...prev, active_until: null } : prev))}
+                    className="rounded-xl border border-border px-3 text-sm font-medium text-muted-foreground hover:bg-secondary"
+                  >
+                    Изчисти
+                  </button>
+                )}
+              </span>
+            </label>
+            <label className="flex h-11 items-center gap-3 text-sm font-semibold text-foreground">
               <input
                 type="checkbox"
                 checked={Boolean(settings?.auto_generate)}
                 onChange={(e) => setSettings((prev) => (prev ? { ...prev, auto_generate: e.target.checked } : prev))}
                 className="size-4"
               />
-              Auto-generate every Sunday
+              Автоматично генериране всяка неделя
             </label>
           </div>
           <div className="mt-5 flex flex-wrap gap-3">
@@ -393,7 +434,7 @@ export default function DefaultWeekPage() {
               disabled={savingSettings || !settings}
               className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90 disabled:opacity-60"
             >
-              {savingSettings ? "Saving..." : "Save settings"}
+              {savingSettings ? "Запазване..." : "Запази настройките"}
             </button>
             <button
               type="button"
@@ -401,16 +442,25 @@ export default function DefaultWeekPage() {
               disabled={generating}
               className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary disabled:opacity-60"
             >
-              {generating ? "Generating..." : "Generate upcoming week now"}
+              {generating
+                ? "Генериране..."
+                : settings?.active_until
+                  ? `Добави в календара до ${settings.active_until}`
+                  : "Генерирай следващата седмица сега"}
             </button>
           </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {settings?.active_until
+              ? `Автоматичното генериране спира след ${settings.active_until}. Запази настройките, за да важи датата и за неделното генериране.`
+              : "Без крайна дата: седмицата по подразбиране се добавя всяка неделя, докато автоматичното генериране е включено."}
+          </p>
         </section>
 
         <section className="rounded-2xl border border-border bg-card p-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 className="text-xl font-semibold text-foreground">Default Week Calendar</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Click a time slot to add a lesson. Click a lesson to edit it.</p>
+              <h2 className="text-xl font-semibold text-foreground">Календар на седмицата по подразбиране</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Кликни на свободен час, за да добавиш урок. Кликни на урок, за да го редактираш.</p>
             </div>
             <button
               type="button"
@@ -422,19 +472,19 @@ export default function DefaultWeekPage() {
               }}
               className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
             >
-              Add lesson
+              Добави урок
             </button>
           </div>
           <div className="mt-4 rounded-2xl border border-border overflow-hidden shadow-sm bg-background">
             <CalendarGrid
-              language="en"
-              locale={"en-US"}
+              language="bg"
+              locale="bg-BG"
               labels={{
-                time: "Time",
-                previousWeek: "Previous week",
-                nextWeek: "Next week",
+                time: "Час",
+                previousWeek: "Предишна седмица",
+                nextWeek: "Следваща седмица",
               }}
-              viewerBadge="Default week"
+              viewerBadge="Седмица по подразбиране"
               showClassTitles={true}
               weekStart={referenceWeekStart}
               classes={gridClasses}
@@ -452,10 +502,10 @@ export default function DefaultWeekPage() {
 
       <DefaultWeekLessonModal
         open={lessonModalOpen}
-        title={lessonModalMode === "create" ? "Add default lesson" : "Edit default lesson"}
+        title={lessonModalMode === "create" ? "Добави урок по подразбиране" : "Редактирай урок по подразбиране"}
         students={students}
         initial={lessonModalInitial}
-        submitLabel={savingLesson ? "Saving..." : lessonModalMode === "create" ? "Add lesson" : "Save changes"}
+        submitLabel={savingLesson ? "Запазване..." : lessonModalMode === "create" ? "Добави урок" : "Запази промените"}
         onSave={handleSaveLesson}
         onDelete={lessonModalMode === "edit" ? handleDeleteLesson : undefined}
         onClose={() => {

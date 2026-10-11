@@ -100,6 +100,11 @@ CREATE INDEX IF NOT EXISTS idx_classes_date ON classes (date);
 CREATE INDEX IF NOT EXISTS idx_user_sessions_token_hash ON user_sessions (token_hash);
 CREATE INDEX IF NOT EXISTS idx_events_event_date ON events (event_date);
 
+ALTER TABLE events
+  ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'events';
+
+CREATE INDEX IF NOT EXISTS idx_events_category ON events (category);
+
 DO $$
 BEGIN
   IF NOT EXISTS (

@@ -1,55 +1,40 @@
 import { NextRequest, NextResponse } from "next/server"
-import sql from "@/lib/db"
+import sql, { type EventRow } from "@/lib/db"
+import { LIGHT_EVENT_COLUMNS, withMediaUrls } from "@/lib/event-media"
 import { requireRole } from "@/lib/auth"
+import { isEventCategory, normalizeEventCategory } from "@/lib/event-categories"
 
 // GET /api/events
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
-  const limit = searchParams.get('limit')
-  const limitNum = limit ? parseInt(limit, 10) : null
+  const limit = searchParams.get("limit")
+  const limitNum = limit ? Number.parseInt(limit, 10) : null
+  const category = searchParams.get("category")
 
   // Add response headers for caching
   const headers = new Headers({
-    'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+    'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=300',
     'Content-Type': 'application/json'
   })
 
   try {
-    let query = sql`
-      SELECT
-        id,
-        title,
-        content_html,
-        images,
-        event_date::text AS event_date,
-        created_by_user_id,
-        created_at,
-        updated_at
+    const normalizedCategory = category ? normalizeEventCategory(category) : null
+    const where = normalizedCategory && isEventCategory(category ?? "")
+      ? sql`WHERE category = ${normalizedCategory}`
+      : category
+        ? sql`WHERE category = ${normalizedCategory}`
+        : sql``
+
+    const limitClause = limitNum && limitNum > 0 ? sql`LIMIT ${limitNum}` : sql``
+    const rows = (await sql`
+      SELECT ${sql.unsafe(LIGHT_EVENT_COLUMNS)}
       FROM events
+      ${where}
       ORDER BY created_at DESC
-    `
+      ${limitClause}
+    `) as EventRow[]
 
-    // Add limit if specified (for landing page performance)
-    if (limitNum && limitNum > 0) {
-      query = sql`
-        SELECT
-          id,
-          title,
-          content_html,
-          images,
-          event_date::text AS event_date,
-          created_by_user_id,
-          created_at,
-          updated_at
-        FROM events
-        ORDER BY created_at DESC
-        LIMIT ${limitNum}
-      `
-    }
-
-    const rows = await query
-
-    return NextResponse.json(rows, { headers })
+    return NextResponse.json(rows.map(withMediaUrls), { headers })
   } catch (error) {
     console.error('Database error in GET /api/events:', error)
     return NextResponse.json(
@@ -75,7 +60,8 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { title, content_html, images, event_date } = body
+  const { title, category, content_html, images, event_date } = body
+  const normalizedCategory = normalizeEventCategory(category)
 
   if (!title || !content_html) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -83,11 +69,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const [row] = await sql`
-      INSERT INTO events (title, content_html, images, event_date, created_by_user_id)
-      VALUES (${title}, ${content_html}, ${Array.isArray(images) ? images : []}, ${event_date ?? null}, ${userId})
+      INSERT INTO events (title, category, content_html, images, event_date, created_by_user_id)
+      VALUES (${title}, ${normalizedCategory}, ${content_html}, ${Array.isArray(images) ? images : []}, ${event_date ?? null}, ${userId})
       RETURNING
         id,
         title,
+        category,
         content_html,
         images,
         event_date::text AS event_date,

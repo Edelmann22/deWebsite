@@ -46,6 +46,7 @@ export type SessionUser = Omit<UserRow, "password_hash">
 export type EventRow = {
   id: number
   title: string
+  category: string
   content_html: string
   images: string[]
   event_date: string | null // YYYY-MM-DD or null

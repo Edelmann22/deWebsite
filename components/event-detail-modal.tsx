@@ -3,7 +3,9 @@
 import { useState } from "react"
 import { X, CalendarDays, Clock, MapPin, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/hooks/use-language"
 import type { EventRow } from "@/lib/db"
+import { translations } from "@/lib/i18n"
 
 type Props = {
   event: EventRow | null
@@ -12,6 +14,8 @@ type Props = {
 }
 
 export default function EventDetailModal({ event, onClose, locale }: Props) {
+  const { language } = useLanguage()
+  const t = translations[language]
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   if (!event) return null
@@ -39,12 +43,12 @@ export default function EventDetailModal({ event, onClose, locale }: Props) {
     const diffTime = Math.abs(now.getTime() - date.getTime())
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
     
-    if (diffDays === 0) return "Today"
-    else if (diffDays === 1) return "Yesterday"
-    else if (diffDays < 7) return `${diffDays} days ago`
+    if (diffDays === 0) return t.eventToday
+    else if (diffDays === 1) return t.eventYesterday
+    else if (diffDays < 7) return `${diffDays} ${t.eventDaysAgo}`
     else if (diffDays < 30) {
       const weeks = Math.floor(diffDays / 7)
-      return `${weeks} week${weeks > 1 ? 's' : ''} ago`
+      return `${weeks} ${weeks === 1 ? t.eventWeekAgo : t.eventWeeksAgo}`
     } else {
       return date.toLocaleDateString(locale, {
         month: "short",
@@ -81,12 +85,12 @@ export default function EventDetailModal({ event, onClose, locale }: Props) {
                 </div>
               )}
               <div className="flex items-center gap-1">
-                <span>Posted {formatCreatedDate(event.created_at, locale)}</span>
+                <span>{t.eventPosted} {formatCreatedDate(event.created_at, locale)}</span>
               </div>
               {event.images && event.images.length > 0 && (
                 <div className="flex items-center gap-1">
                   <ImageIcon size={16} />
-                  <span>{event.images.length} {event.images.length === 1 ? 'photo' : 'photos'}</span>
+                  <span>{event.images.length} {event.images.length === 1 ? t.eventPhoto : t.eventPhotos}</span>
                 </div>
               )}
             </div>
@@ -160,11 +164,11 @@ export default function EventDetailModal({ event, onClose, locale }: Props) {
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               {event.images && event.images.length > 1 && (
-                <span>Image {currentImageIndex + 1} of {event.images.length}</span>
+                <span>{t.eventImageOf} {currentImageIndex + 1} {t.eventOf} {event.images.length}</span>
               )}
             </div>
             <Button onClick={onClose} size="lg">
-              Close
+              {t.close}
             </Button>
           </div>
         </div>

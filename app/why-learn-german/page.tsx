@@ -101,16 +101,16 @@ export default function WhyLearnGermanPage() {
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium">
               <ArrowLeft className="w-4 h-4" />
-              {t.whyGermanBackToHome}
+              <span className="hidden sm:inline">{t.whyGermanBackToHome}</span>
             </Link>
             <div className="h-4 w-px bg-gray-300" />
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </Link>
@@ -120,13 +120,13 @@ export default function WhyLearnGermanPage() {
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               className="h-8 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
-              aria-label="Website language"
+              aria-label={t.language}
             >
               {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                 <option key={value} value={value}>{meta.label}</option>
               ))}
             </select>
-            <Button onClick={() => router.push("/auth")} size="sm" className="bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
+            <Button onClick={() => router.push("/auth")} size="sm" className="hidden sm:inline-flex bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
               {t.whyGermanPrimaryCta}
             </Button>
           </div>

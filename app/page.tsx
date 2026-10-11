@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { CalendarDays, Menu, X, MessageSquare, Plus, Loader2 } from "lucide-react"
+import { CalendarDays, Menu, X, MessageSquare, Plus, Loader2, KeyRound } from "lucide-react"
 import CalendarGrid from "@/components/calendar-grid"
 import ClassDetailPanel from "@/components/class-detail-panel"
 import RawCreateClassModal from "@/components/create-class-modal"
 import UpcomingClasses from "@/components/upcoming-classes"
 import EventList from "@/components/event-list"
 import EventDetailModal from "@/components/event-detail-modal"
+import ChangePasswordModal from "@/components/change-password-modal"
 import LandingPage from "@/components/landing-page-new"
 import { useClasses } from "@/hooks/use-classes"
 import { useSession } from "@/hooks/use-session"
@@ -36,7 +37,8 @@ export default function HomePage() {
   const [createTime, setCreateTime] = useState<string | null>(null)
   const [isClient, setIsClient] = useState(false)
   const router = useRouter()
-  const { user, loading: sessionLoading, logout } = useSession()
+  const { user, loading: sessionLoading, logout, changePassword } = useSession()
+  const [changingPassword, setChangingPassword] = useState(false)
   const t = translations[language]
   const locale = LANGUAGE_META[language].locale
   const isAdmin = user?.role === "admin"
@@ -68,11 +70,16 @@ export default function HomePage() {
   weekStart.setHours(0, 0, 0, 0)
   weekStart.setDate(weekStart.getDate() - ((weekStart.getDay() + 6) % 7))
 
-  // Load a rolling window of classes around the visible week
-  const rangeStart = new Date(weekStart)
-  rangeStart.setDate(rangeStart.getDate() - 7) // one week before
-  const rangeEnd = new Date(weekStart)
-  rangeEnd.setDate(rangeEnd.getDate() + 7 * 5) // about five weeks ahead
+  // Load classes in 4-week blocks (plus a week either side), so moving between
+  // weeks inside a block reuses the loaded data instead of refetching.
+  const WEEK_MS = 7 * 24 * 60 * 60 * 1000
+  const blockIndex = Math.floor(Math.round(weekStart.getTime() / WEEK_MS) / 4)
+  const blockStart = new Date(weekStart)
+  blockStart.setDate(blockStart.getDate() - 7 * (Math.round(weekStart.getTime() / WEEK_MS) - blockIndex * 4))
+  const rangeStart = new Date(blockStart)
+  rangeStart.setDate(rangeStart.getDate() - 7)
+  const rangeEnd = new Date(blockStart)
+  rangeEnd.setDate(rangeEnd.getDate() + 7 * 5)
 
   const { classes, loading, createClass, updateClass, deleteClass } = useClasses(
     formatDateParam(rangeStart),
@@ -161,9 +168,9 @@ export default function HomePage() {
             <Image
               src="/deutschereiLogo.png"
               alt={`${t.appName} logo`}
-              width={174}
-              height={56}
-              className="h-9 w-auto"
+              width={100}
+              height={35}
+              className="h-[35px] w-auto max-w-none shrink-0"
               priority
             />
           </button>
@@ -177,7 +184,7 @@ export default function HomePage() {
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               className="h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground"
-              aria-label="Website language"
+              aria-label={t.language}
             >
               {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                 <option key={value} value={value}>
@@ -197,6 +204,18 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-2">
+            {user && (
+              <button
+                type="button"
+                onClick={() => setChangingPassword(true)}
+                aria-label={t.changePassword}
+                title={t.changePassword}
+                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
+              >
+                <KeyRound size={15} />
+                <span className="hidden sm:inline">{t.changePassword}</span>
+              </button>
+            )}
             {user && (
               <button
                 type="button"
@@ -273,7 +292,7 @@ export default function HomePage() {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-card text-foreground text-xs font-semibold hover:bg-secondary transition"
                 >
                   <CalendarDays size={14} />
-                  <span>Default week</span>
+                  <span>Седмица по подразбиране</span>
                 </button>
               )}
             </div>
@@ -475,7 +494,6 @@ export default function HomePage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-10">
             <div>
               <p className="font-semibold text-foreground">Contacts</p>
-              <p>Phone: <a className="text-primary hover:underline" href="tel:+359888559913">+359 888 559 913</a></p>
             </div>
             <div>
               <p className="font-semibold text-foreground">Location</p>
@@ -495,6 +513,14 @@ export default function HomePage() {
       </div>
 
       {/* Event Detail Modal */}
+      {changingPassword && (
+        <ChangePasswordModal
+          t={t}
+          onSubmit={changePassword}
+          onClose={() => setChangingPassword(false)}
+        />
+      )}
+
       {selectedEvent && (
         <EventDetailModal
           event={selectedEvent}

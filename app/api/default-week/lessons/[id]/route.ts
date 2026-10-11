@@ -13,12 +13,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   try {
     await requireRole("admin")
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ error: "Нямаш достъп" }, { status: 403 })
   }
 
   const { id } = await params
   const lessonId = Number(id)
-  if (!lessonId) return NextResponse.json({ error: "Invalid lesson id" }, { status: 400 })
+  if (!lessonId) return NextResponse.json({ error: "Невалиден урок" }, { status: 400 })
 
   const body = await req.json().catch(() => ({}))
   const {
@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         LIMIT 1
       `
       if (!student) {
-        return NextResponse.json({ error: "Selected student account was not found" }, { status: 400 })
+        return NextResponse.json({ error: "Избраният ученически акаунт не е намерен" }, { status: 400 })
       }
     }
 
@@ -85,17 +85,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     `
 
     if (!row) {
-      return NextResponse.json({ error: "Lesson not found" }, { status: 404 })
+      return NextResponse.json({ error: "Урокът не е намерен" }, { status: 404 })
     }
 
     return NextResponse.json(row)
   } catch (error) {
     const message =
       error instanceof Error && /relation "default_week_lessons" does not exist/i.test(error.message)
-        ? "Default week tables are missing. Run the default-week migration."
+        ? "Липсват таблиците за седмицата по подразбиране. Стартирай миграцията default-week."
         : error instanceof Error
           ? error.message
-          : "Failed to update default week lesson"
+          : "Неуспешно запазване на урока по подразбиране"
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
@@ -104,12 +104,12 @@ export async function DELETE(_: NextRequest, { params }: Params) {
   try {
     await requireRole("admin")
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ error: "Нямаш достъп" }, { status: 403 })
   }
 
   const { id } = await params
   const lessonId = Number(id)
-  if (!lessonId) return NextResponse.json({ error: "Invalid lesson id" }, { status: 400 })
+  if (!lessonId) return NextResponse.json({ error: "Невалиден урок" }, { status: 400 })
 
   try {
     await sql`DELETE FROM default_week_lessons WHERE id = ${lessonId}`
@@ -117,10 +117,10 @@ export async function DELETE(_: NextRequest, { params }: Params) {
   } catch (error) {
     const message =
       error instanceof Error && /relation "default_week_lessons" does not exist/i.test(error.message)
-        ? "Default week tables are missing. Run the default-week migration."
+        ? "Липсват таблиците за седмицата по подразбиране. Стартирай миграцията default-week."
         : error instanceof Error
           ? error.message
-          : "Failed to delete default week lesson"
+          : "Неуспешно изтриване на урока по подразбиране"
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

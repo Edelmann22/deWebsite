@@ -47,15 +47,15 @@ export default function OffersPage() {
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </Link>
             <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
               <ArrowLeft className="w-4 h-4" />
-              {t.offersPageBackToHome}
+              <span className="hidden sm:inline">{t.offersPageBackToHome}</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function OffersPage() {
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               className="h-9 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700"
-              aria-label="Website language"
+              aria-label={t.language}
             >
               {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                 <option key={value} value={value}>
@@ -71,7 +71,7 @@ export default function OffersPage() {
                 </option>
               ))}
             </select>
-            <Button onClick={() => router.push("/auth")} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => router.push("/auth")} className="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700">
               {t.offersPageCta}
             </Button>
           </div>

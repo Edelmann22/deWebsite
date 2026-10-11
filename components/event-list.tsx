@@ -1,6 +1,8 @@
 "use client"
 
 import type { EventRow } from "@/lib/db"
+import { useLanguage } from "@/hooks/use-language"
+import { translations, type TranslationDictionary } from "@/lib/i18n"
 import { CalendarDays, Pencil, Trash2 } from "lucide-react"
 
 type Props = {
@@ -27,21 +29,21 @@ function formatEventDate(value: string, locale: string) {
   })
 }
 
-function formatCreatedDate(value: string, locale: string) {
+function formatCreatedDate(value: string, locale: string, t: TranslationDictionary) {
   const date = new Date(value)
   const now = new Date()
   const diffTime = Math.abs(now.getTime() - date.getTime())
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
   
   if (diffDays === 0) {
-    return "Today"
+    return t.eventToday
   } else if (diffDays === 1) {
-    return "Yesterday"
+    return t.eventYesterday
   } else if (diffDays < 7) {
-    return `${diffDays} days ago`
+    return `${diffDays} ${t.eventDaysAgo}`
   } else if (diffDays < 30) {
     const weeks = Math.floor(diffDays / 7)
-    return `${weeks} week${weeks > 1 ? 's' : ''} ago`
+    return `${weeks} ${weeks === 1 ? t.eventWeekAgo : t.eventWeeksAgo}`
   } else {
     return date.toLocaleDateString(locale, {
       month: "short",
@@ -62,15 +64,15 @@ function eventPreview(html: string, wordLimit = 16) {
 }
 
 export default function EventList({ events, locale, loading, isAdmin, onDelete, labels }: Props) {
-  console.log("EventList rendered with events:", events?.length, "loading:", loading, "isAdmin:", isAdmin)
-  
+  const { language } = useLanguage()
+  const t = translations[language]
   const resolved = labels ?? {
-    title: "Events",
-    subtitle: "News, announcements, and special dates.",
-    empty: "No events yet.",
-    loading: "Loading events...",
-    edit: "Edit",
-    remove: "Delete",
+    title: t.events,
+    subtitle: t.eventsSubtitle,
+    empty: t.eventsEmpty,
+    loading: t.eventsLoading,
+    edit: t.editEvent,
+    remove: t.deleteEvent,
   }
 
   return (
@@ -109,7 +111,7 @@ export default function EventList({ events, locale, loading, isAdmin, onDelete, 
                   </div>
                 )}
                 <div className="flex items-center gap-1">
-                  <span>Posted {formatCreatedDate(event.created_at, locale)}</span>
+                  <span>{t.eventPosted} {formatCreatedDate(event.created_at, locale, t)}</span>
                 </div>
               </div>
             </div>

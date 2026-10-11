@@ -10,6 +10,7 @@ import {
   DEFAULT_CLASS_DETAILS_BACKGROUND_COLOR,
   DEFAULT_CLASS_SLOT_COLOR,
 } from "@/lib/class-colors"
+import { SCHEDULE_PERIODS, getSchedulePeriodLabel, getScheduleTimes, isValidSchedulePeriod } from "@/lib/schedule-periods"
 
 type StudentOption = { id: number; nickname: string }
 
@@ -27,20 +28,20 @@ export type DefaultWeekLessonDraft = {
 }
 
 const WEEKDAYS = [
-  { value: 1, label: "Monday" },
-  { value: 2, label: "Tuesday" },
-  { value: 3, label: "Wednesday" },
-  { value: 4, label: "Thursday" },
-  { value: 5, label: "Friday" },
-  { value: 6, label: "Saturday" },
-  { value: 7, label: "Sunday" },
+  { value: 1, label: "Понеделник" },
+  { value: 2, label: "Вторник" },
+  { value: 3, label: "Сряда" },
+  { value: 4, label: "Четвъртък" },
+  { value: 5, label: "Петък" },
+  { value: 6, label: "Събота" },
+  { value: 7, label: "Неделя" },
 ] as const
 
 function withDefaults(value: DefaultWeekLessonDraft): DefaultWeekLessonDraft {
   return {
     day_of_week: value.day_of_week ?? 1,
-    start_time: value.start_time ?? "10:00",
-    end_time: value.end_time ?? "12:00",
+    start_time: value.start_time ?? "08:00",
+    end_time: value.end_time ?? "09:30",
     student_user_id: value.student_user_id ?? 0,
     language: value.language ?? "Deutsch",
     teacher: value.teacher ?? "Rosi Vaseva",
@@ -82,6 +83,9 @@ export default function DefaultWeekLessonModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!isValidSchedulePeriod(form.start_time, form.end_time)) {
+      return
+    }
     onSave(form)
   }
 
@@ -102,7 +106,7 @@ export default function DefaultWeekLessonModal({
         <div className="p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto">
           <div className="grid gap-4 md:grid-cols-3">
             <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-              Day
+              Ден
               <select
                 value={form.day_of_week}
                 onChange={(e) => setForm((prev) => ({ ...prev, day_of_week: Number(e.target.value) }))}
@@ -113,41 +117,40 @@ export default function DefaultWeekLessonModal({
                 ))}
               </select>
             </label>
-            <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-              Start time
-              <input
-                type="time"
-                step={900}
-                value={form.start_time}
-                onChange={(e) => setForm((prev) => ({ ...prev, start_time: e.target.value }))}
+            <label className="flex flex-col gap-2 text-sm font-semibold text-foreground md:col-span-2">
+              Час
+              <select
+                value={getSchedulePeriodLabel(form.start_time, form.end_time)}
+                onChange={(e) => {
+                  const times = getScheduleTimes(e.target.value)
+                  if (!times) return
+                  setForm((prev) => ({ ...prev, start_time: times.start, end_time: times.end }))
+                }}
                 className="h-11 rounded-xl border border-border bg-background px-3 text-sm"
-              />
-            </label>
-            <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-              End time
-              <input
-                type="time"
-                step={900}
-                value={form.end_time}
-                onChange={(e) => setForm((prev) => ({ ...prev, end_time: e.target.value }))}
-                className="h-11 rounded-xl border border-border bg-background px-3 text-sm"
-              />
+              >
+                <option value="" disabled>—</option>
+                {SCHEDULE_PERIODS.map((period) => (
+                  <option key={period.period} value={period.period}>
+                    {period.period}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="flex flex-col gap-2 text-sm font-semibold text-foreground md:col-span-2">
-              Student
+              Ученик
               <select
                 value={form.student_user_id || ""}
                 onChange={(e) => setForm((prev) => ({ ...prev, student_user_id: Number(e.target.value) }))}
                 className="h-11 rounded-xl border border-border bg-background px-3 text-sm"
               >
-                <option value="" disabled>Select student</option>
+                <option value="" disabled>Избери ученик</option>
                 {students.map((student) => (
                   <option key={student.id} value={student.id}>{student.nickname}</option>
                 ))}
               </select>
             </label>
             <label className="flex flex-col gap-2 text-sm font-semibold text-foreground">
-              Online
+              Онлайн
               <input
                 type="checkbox"
                 checked={form.online}
@@ -161,7 +164,7 @@ export default function DefaultWeekLessonModal({
                   className="w-4 h-4 rounded-full border border-black/10"
                   style={{ backgroundColor: form.color }}
                 />
-                Font color
+                Цвят на текста
               </span>
               <select
                 value={form.color}
@@ -179,7 +182,7 @@ export default function DefaultWeekLessonModal({
                   className="w-4 h-4 rounded-full border border-black/10"
                   style={{ backgroundColor: form.details_background_color }}
                 />
-                Details background
+                Фон на детайлите
               </span>
               <select
                 value={form.details_background_color}
@@ -197,7 +200,7 @@ export default function DefaultWeekLessonModal({
                   className="w-4 h-4 rounded-full border border-black/10"
                   style={{ backgroundColor: form.slot_color }}
                 />
-                Slot color
+                Цвят на клетката
               </span>
               <select
                 value={form.slot_color}
@@ -225,7 +228,7 @@ export default function DefaultWeekLessonModal({
               onClick={onClose}
               className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-secondary"
             >
-              Cancel
+              Отказ
             </button>
           </div>
           {onDelete && (
@@ -234,7 +237,7 @@ export default function DefaultWeekLessonModal({
               onClick={onDelete}
               className="rounded-xl border border-destructive/40 px-4 py-2 text-sm font-semibold text-destructive hover:bg-destructive/10"
             >
-              Delete
+              Изтрий
             </button>
           )}
         </div>

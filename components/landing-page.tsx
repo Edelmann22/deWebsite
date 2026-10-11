@@ -71,9 +71,9 @@ export default function LandingPage({
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={144}
-                height={36}
-                className="h-9 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </div>
@@ -83,7 +83,7 @@ export default function LandingPage({
                 value={language}
                 onChange={(e) => onLanguageChange(e.target.value as Language)}
                 className="h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground"
-                aria-label="Website language"
+                aria-label={t.language}
               >
                 {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                   <option key={value} value={value}>

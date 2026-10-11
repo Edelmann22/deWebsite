@@ -41,7 +41,7 @@ export function useSession() {
     })
     const data = await readJsonSafely(res)
     if (!res.ok) {
-      throw new Error(data?.error ?? "Login failed")
+      throw Object.assign(new Error(data?.error ?? "Login failed"), { status: res.status })
     }
     setUser(data?.user ?? null)
     return data?.user as SessionUser
@@ -55,10 +55,23 @@ export function useSession() {
     })
     const data = await readJsonSafely(res)
     if (!res.ok) {
-      throw new Error(data?.error ?? "Signup failed")
+      throw Object.assign(new Error(data?.error ?? "Signup failed"), { status: res.status })
     }
     setUser(data?.user ?? null)
     return data?.user as SessionUser
+  }
+
+  // Throws an Error whose `code` matches the API: wrong_current, too_short, same_password, ...
+  const changePassword = async (currentPassword: string, newPassword: string) => {
+    const res = await fetch("/api/auth/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    })
+    if (!res.ok) {
+      const data = await readJsonSafely(res)
+      throw Object.assign(new Error(data?.error ?? "Password change failed"), { code: data?.code ?? "failed" })
+    }
   }
 
   const logout = async () => {
@@ -66,5 +79,5 @@ export function useSession() {
     setUser(null)
   }
 
-  return { user, loading, refresh, login, signup, logout }
+  return { user, loading, refresh, login, signup, changePassword, logout }
 }

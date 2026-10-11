@@ -6,7 +6,6 @@ import AuthPanel from "@/components/auth-panel"
 import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
 import { useSession } from "@/hooks/use-session"
 import { useLanguage } from "@/hooks/use-language"
-import { Button } from "@/components/ui/button"
 
 export default function AuthPage() {
   const router = useRouter()
@@ -15,18 +14,10 @@ export default function AuthPage() {
   const t = translations[language]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-      <header className="sticky top-0 z-40 border-b border-border bg-card/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="border-b border-border bg-background">
+        <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => router.push("/")}
-              className="text-foreground"
-            >
-              {t.goBack}
-            </Button>
             <button
               onClick={() => router.push("/")}
               className="flex items-center gap-2.5 hover:opacity-80 transition-opacity"
@@ -34,18 +25,26 @@ export default function AuthPage() {
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={144}
-                height={36}
-                className="h-9 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
+            </button>
+            <span className="hidden h-5 w-px bg-border sm:block" />
+            <button
+              type="button"
+              onClick={() => router.push("/")}
+              className="hidden text-sm text-muted-foreground hover:text-foreground sm:block"
+            >
+              ← {t.goBack}
             </button>
           </div>
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value as Language)}
-            className="h-9 rounded-lg border border-border bg-card px-3 text-sm text-foreground"
-            aria-label="Website language"
+            className="h-9 rounded-md border border-border bg-background px-2.5 text-sm text-foreground shadow-none"
+            aria-label={t.language}
           >
             {Object.entries(LANGUAGE_META).map(([value, meta]) => (
               <option key={value} value={value}>
@@ -56,7 +55,7 @@ export default function AuthPage() {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-6xl flex-col items-center justify-center px-4 py-16 sm:px-6 lg:py-20">
+      <main className="flex flex-1">
         <AuthPanel
           t={t}
           onLogin={async (email, password) => {

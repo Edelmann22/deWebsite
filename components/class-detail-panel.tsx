@@ -27,6 +27,7 @@ import {
 } from "lucide-react"
 import type { TranslationDictionary } from "@/lib/i18n"
 import type { StudentOption } from "@/hooks/use-students"
+import { SCHEDULE_PERIODS, getSchedulePeriodLabel, getScheduleTimes, isValidSchedulePeriod } from "@/lib/schedule-periods"
 
 type Props = {
   cls: ClassRow
@@ -99,6 +100,9 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
   }
 
   const handleSave = async () => {
+    if (!isValidSchedulePeriod(draft.start_time, draft.end_time)) {
+      return
+    }
     setSaving(true)
     await onUpdate(cls.id, {
       ...draft,
@@ -134,7 +138,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
             <button
               onClick={onClose}
               className="absolute top-3 right-3 sm:top-4 sm:right-4 rounded-lg bg-white/90 border border-gray-300 p-2.5 text-gray-600 shadow-lg transition hover:bg-white hover:text-gray-900 hover:shadow-xl z-30"
-              aria-label="Close class details"
+              aria-label={t.close}
             >
               <X size={20} />
             </button>
@@ -182,7 +186,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               <button
                 onClick={onClose}
                 className="rounded-xl border border-border/70 bg-card/90 p-2 text-muted-foreground shadow-sm transition hover:bg-white hover:text-foreground"
-                aria-label="Close details"
+                aria-label={t.close}
               >
                 <X size={16} />
               </button>
@@ -215,7 +219,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
           <div className="rounded-2xl border border-white/70 bg-white/75 p-4 sm:p-5 shadow-sm">
             <div className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-muted-foreground">
               <UserRound size={14} className="text-primary" />
-              Student
+              {t.studentBadge}
             </div>
             {editing && canEdit ? (
               <select
@@ -270,33 +274,22 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
           <div className="flex min-w-0 items-center gap-2 text-sm text-muted-foreground">
             <Clock size={15} className="text-blue-600" />
             {editing && canEdit ? (
-              <div className="flex items-center gap-2">
-                <input
-                  type="time"
-                  step={900}
-                  value={draft.start_time}
-                  onChange={(e) => setDraft({ ...draft, start_time: e.target.value })}
-                  className="rounded-xl border-2 border-blue-300 bg-blue-50/50 px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                  pattern="[0-9]{2}:[0-9]{2}"
-                  min="06:00"
-                  max="22:00"
-                  required
-                  data-time-format="24h"
-                />
-                <span className="text-blue-600">-</span>
-                <input
-                  type="time"
-                  step={900}
-                  value={draft.end_time}
-                  onChange={(e) => setDraft({ ...draft, end_time: e.target.value })}
-                  className="rounded-xl border-2 border-blue-300 bg-blue-50/50 px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                  pattern="[0-9]{2}:[0-9]{2}"
-                  min="06:00"
-                  max="22:00"
-                  required
-                  data-time-format="24h"
-                />
-              </div>
+              <select
+                value={getSchedulePeriodLabel(draft.start_time, draft.end_time)}
+                onChange={(e) => {
+                  const times = getScheduleTimes(e.target.value)
+                  if (!times) return
+                  setDraft({ ...draft, start_time: times.start, end_time: times.end })
+                }}
+                className="rounded-xl border-2 border-blue-300 bg-blue-50/50 px-2 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              >
+                <option value="" disabled>—</option>
+                {SCHEDULE_PERIODS.map((period) => (
+                  <option key={period.period} value={period.period}>
+                    {period.period}
+                  </option>
+                ))}
+              </select>
             ) : (
               <span className="text-blue-600">{formatTime(current.start_time)} - {formatTime(current.end_time)}</span>
             )}
@@ -423,7 +416,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               ) : (
                 <div className="inline-flex items-center gap-2 rounded-full bg-secondary/65 px-3 py-2 text-sm font-medium text-foreground">
                   <span className="size-3 rounded-full border border-black/10" style={{ backgroundColor: normalizeClassColor(current.color) }} />
-                  {CLASS_COLOR_OPTIONS.find((option) => option.value === normalizeClassColor(current.color))?.label ?? "Custom"}
+                  {CLASS_COLOR_OPTIONS.find((option) => option.value === normalizeClassColor(current.color))?.label ?? "—"}
                 </div>
               )}
             </section>
@@ -454,7 +447,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               ) : (
                 <div className="inline-flex items-center gap-2 rounded-full bg-secondary/65 px-3 py-2 text-sm font-medium text-foreground">
                   <span className="size-3 rounded-full border border-black/10" style={{ backgroundColor: normalizeClassDetailsBackgroundColor(current.details_background_color) }} />
-                  {CLASS_DETAILS_BACKGROUND_COLOR_OPTIONS.find((option) => option.value === normalizeClassDetailsBackgroundColor(current.details_background_color))?.label ?? "Custom"}
+                  {CLASS_DETAILS_BACKGROUND_COLOR_OPTIONS.find((option) => option.value === normalizeClassDetailsBackgroundColor(current.details_background_color))?.label ?? "—"}
                 </div>
               )}
             </section>
@@ -485,7 +478,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               ) : (
                 <div className="inline-flex items-center gap-2 rounded-full bg-secondary/65 px-3 py-2 text-sm font-medium text-foreground">
                   <span className="size-3 rounded-full border border-black/10" style={{ backgroundColor: normalizeClassSlotColor(current.slot_color) }} />
-                  {CLASS_SLOT_COLOR_OPTIONS.find((option) => option.value === normalizeClassSlotColor(current.slot_color))?.label ?? "Custom"}
+                  {CLASS_SLOT_COLOR_OPTIONS.find((option) => option.value === normalizeClassSlotColor(current.slot_color))?.label ?? "—"}
                 </div>
               )}
             </section>
@@ -498,7 +491,7 @@ export default function ClassDetailPanel({ cls, locale, t, students, canEdit, on
               className="w-full rounded-lg bg-gray-100 hover:bg-gray-200 border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition flex items-center justify-center gap-2"
             >
               <X size={16} />
-              Close
+              {t.close}
             </button>
           </div>
         </div>

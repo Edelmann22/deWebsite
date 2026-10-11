@@ -182,7 +182,13 @@
 
   .event-editor img,
   .event-content img {
-    @apply max-w-full rounded-xl border border-border;
+    @apply rounded-xl border border-border;
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 70vh;
+    margin: 1rem 0;
+    object-fit: contain;
   }
 
   .event-content {

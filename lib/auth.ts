@@ -77,6 +77,23 @@ export async function createSession(userId: number) {
   return rawToken
 }
 
+// Sets a new password and signs the user out everywhere except the current session.
+export async function changePassword(userId: number, newPassword: string) {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(SESSION_COOKIE)?.value
+  const currentTokenHash = token ? hashToken(token) : ""
+
+  await sql`
+    UPDATE public.users
+    SET password_hash = ${hashPassword(newPassword)}, updated_at = NOW()
+    WHERE id = ${userId}
+  `
+  await sql`
+    DELETE FROM public.user_sessions
+    WHERE user_id = ${userId} AND token_hash <> ${currentTokenHash}
+  `
+}
+
 export async function clearSession() {
   const cookieStore = await cookies()
   const token = cookieStore.get(SESSION_COOKIE)?.value

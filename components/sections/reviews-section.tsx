@@ -82,7 +82,7 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
     }
 
     if (!newReview.comment.trim()) {
-      setError("Please write a comment for your review.")
+      setError(t.reviewCommentRequired)
       return
     }
 
@@ -103,18 +103,18 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
         fetchReviews() // Refresh reviews
       } else {
         const errorData = await response.json()
-        setError(errorData.error || "Failed to submit review")
+        setError(errorData.error || t.reviewSubmitFailed)
       }
     } catch (error) {
       console.error("Error submitting review:", error)
-      setError("An unexpected error occurred. Please try again.")
+      setError(t.genericError)
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleDeleteReview = async (reviewId: number) => {
-    if (!confirm("Are you sure you want to delete this review?")) {
+    if (!confirm(t.reviewDeleteConfirm)) {
       return
     }
 
@@ -225,9 +225,11 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {review.course}
-                    </Badge>
+                    {review.course && (
+                      <Badge variant="outline" className="text-xs">
+                        {review.course}
+                      </Badge>
+                    )}
                     {isAdmin && (
                       <Button
                         variant="ghost"
@@ -263,7 +265,7 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
               onClick={() => window.location.href = "/reviews"}
               className="border-blue-600 text-blue-600 hover:bg-blue-50"
             >
-              View All {reviews.length} Reviews
+              {t.reviewViewAll} ({reviews.length})
             </Button>
           </div>
         )}
@@ -274,10 +276,10 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
             userHasReview ? (
               <div className="bg-gray-100 border border-gray-300 rounded-lg p-6 max-w-md mx-auto">
                 <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">You've already shared your experience</h3>
-                <p className="text-gray-600 text-sm">Thank you for your review! Each user can only leave one review.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t.reviewAlreadyTitle}</h3>
+                <p className="text-gray-600 text-sm">{t.reviewAlreadyBody}</p>
                 {isAdmin && (
-                  <p className="text-gray-500 text-xs mt-2">As an admin, you can manage all reviews.</p>
+                  <p className="text-gray-500 text-xs mt-2">{t.reviewAdminNote}</p>
                 )}
               </div>
             ) : (

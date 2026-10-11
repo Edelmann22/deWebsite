@@ -56,15 +56,15 @@ export default function GroupCoursePage() {
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto pl-0 pr-2 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/deutschereiLogo.png"
                 alt={`${t.appName} logo`}
-                width={128}
-                height={32}
-                className="h-8 w-auto"
+                width={100}
+                height={35}
+                className="h-[35px] w-auto max-w-none shrink-0"
                 priority
               />
             </Link>
@@ -79,14 +79,14 @@ export default function GroupCoursePage() {
               value={language}
               onChange={(e) => setLanguage(e.target.value as Language)}
               className="h-8 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
-              aria-label="Website language"
+              aria-label={t.language}
             >
               {Object.entries(LANGUAGE_META).map(([value, meta]) => (
                 <option key={value} value={value}>{meta.label}</option>
               ))}
             </select>
             <Button onClick={() => router.push("/auth")} size="sm"
-              className="bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
+              className="hidden sm:inline-flex bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
               Запишете се
             </Button>
           </div>
