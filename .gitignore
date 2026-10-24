@@ -8,3 +8,5 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
+# Any env file or copy of one (e.g. .env.local.save)
+.env*
