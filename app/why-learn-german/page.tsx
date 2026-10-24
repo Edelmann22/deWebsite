@@ -2,108 +2,70 @@
 
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { ArrowLeft, Globe, Briefcase, GraduationCap, Users, Brain, Heart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { Lora, Caveat } from "next/font/google"
+import { ArrowLeft, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/hooks/use-language"
 import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
 
-export default function WhyLearnGermanPage() {
+const serif = Lora({ subsets: ["latin", "cyrillic"], display: "swap" })
+const hand = Caveat({ subsets: ["latin", "cyrillic"], weight: ["500", "700"], display: "swap" })
+
+// TODO: replace with a real portrait (e.g. drop /teacher.jpg into /public).
+const TEACHER_PHOTO = "/placeholder-user.jpg"
+const SIDE_PHOTO = { src: "/Ph5.jpg", caption: "Neuschwanstein" }
+const CONTACT_EMAIL = "rosi_vasseva@abv.bg"
+
+const BRAND_RED = "text-[#D10026]"
+
+function Tape({ className = "" }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={`absolute h-6 w-24 bg-yellow-200/70 shadow-sm ${className}`}
+    />
+  )
+}
+
+export default function AboutPage() {
   const router = useRouter()
   const { language, setLanguage } = useLanguage()
   const t = translations[language]
 
+  const approach = [
+    { title: t.aboutApproach1Title, text: t.aboutApproach1Text },
+    { title: t.aboutApproach2Title, text: t.aboutApproach2Text },
+    { title: t.aboutApproach3Title, text: t.aboutApproach3Text },
+  ]
+
+  const offers = [
+    { href: "/courses/group", title: t.offersGroupTitle, text: t.aboutOfferGroupText },
+    { href: "/courses/individual", title: t.offersIndividualTitle, text: t.aboutOfferIndividualText },
+    { href: "/courses/exam-prep", title: t.offersExamPrepTitle, text: t.aboutOfferExamText },
+  ]
+
   const reasons = [
-    {
-    icon: <Globe className="w-6 h-6" />,
-    color: "bg-blue-500",
-    title: t.whyGermanReason1Title,
-    description: t.whyGermanReason1Description,
-    stats: t.whyGermanReason1Stats,
-  },
-  {
-    icon: <Briefcase className="w-6 h-6" />,
-    color: "bg-emerald-500",
-    title: t.whyGermanReason2Title,
-    description: t.whyGermanReason2Description,
-    stats: t.whyGermanReason2Stats,
-  },
-  {
-    icon: <GraduationCap className="w-6 h-6" />,
-    color: "bg-violet-500",
-    title: t.whyGermanReason3Title,
-    description: t.whyGermanReason3Description,
-    stats: t.whyGermanReason3Stats,
-  },
-  {
-    icon: <Users className="w-6 h-6" />,
-    color: "bg-orange-500",
-    title: t.whyGermanReason4Title,
-    description: t.whyGermanReason4Description,
-    stats: t.whyGermanReason4Stats,
-  },
-  {
-    icon: <Brain className="w-6 h-6" />,
-    color: "bg-red-500",
-    title: t.whyGermanReason5Title,
-    description: t.whyGermanReason5Description,
-    stats: t.whyGermanReason5Stats,
-  },
-  {
-    icon: <Heart className="w-6 h-6" />,
-    color: "bg-pink-500",
-    title: t.whyGermanReason6Title,
-    description: t.whyGermanReason6Description,
-    stats: t.whyGermanReason6Stats,
-  },
+    { title: t.whyGermanReason1Title, text: t.whyGermanReason1Description },
+    { title: t.whyGermanReason2Title, text: t.whyGermanReason2Description },
+    { title: t.whyGermanReason3Title, text: t.whyGermanReason3Description },
+    { title: t.whyGermanReason4Title, text: t.whyGermanReason4Description },
+    { title: t.whyGermanReason5Title, text: t.whyGermanReason5Description },
+    { title: t.whyGermanReason6Title, text: t.whyGermanReason6Description },
   ]
 
-  const industries = [
-    t.whyGermanIndustry1,
-    t.whyGermanIndustry2,
-    t.whyGermanIndustry3,
-    t.whyGermanIndustry4,
-    t.whyGermanIndustry5,
-    t.whyGermanIndustry6,
-  ]
+  return (
+    <div className="min-h-screen bg-[#FBF7F0] text-stone-800">
 
-  const testimonials = [
-    {
-      name: t.whyGermanTestimonial1Name,
-      role: t.whyGermanTestimonial1Role,
-      content: t.whyGermanTestimonial1Content,
-      avatar: t.whyGermanTestimonial1Avatar,
-    },
-    {
-      name: t.whyGermanTestimonial2Name,
-      role: t.whyGermanTestimonial2Role,
-      content: t.whyGermanTestimonial2Content,
-      avatar: t.whyGermanTestimonial2Avatar,
-    },
-    {
-      name: t.whyGermanTestimonial3Name,
-      role: t.whyGermanTestimonial3Role,
-      content: t.whyGermanTestimonial3Content,
-      avatar: t.whyGermanTestimonial3Avatar,
-    },
-  ]
-
-  const flagStripes = ["bg-gray-900", "bg-red-600", "bg-yellow-400"]
-
-    return (
-    <div className="min-h-screen bg-white">
- 
       {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-stone-200 bg-[#FBF7F0]/90 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 transition-colors text-sm font-medium">
+            <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">{t.whyGermanBackToHome}</span>
             </Link>
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-4 w-px bg-stone-300" />
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="/deutschereiLogo.png"
@@ -115,175 +77,158 @@ export default function WhyLearnGermanPage() {
               />
             </Link>
           </div>
-          <div className="flex items-center gap-3">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as Language)}
-              className="h-8 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
-              aria-label={t.language}
-            >
-              {Object.entries(LANGUAGE_META).map(([value, meta]) => (
-                <option key={value} value={value}>{meta.label}</option>
-              ))}
-            </select>
-            <Button onClick={() => router.push("/auth")} size="sm" className="hidden sm:inline-flex bg-gray-900 hover:bg-gray-700 text-white rounded-lg">
-              {t.whyGermanPrimaryCta}
-            </Button>
-          </div>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Language)}
+            className="h-8 rounded-md border border-stone-300 bg-white px-3 text-sm text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300"
+            aria-label={t.language}
+          >
+            {Object.entries(LANGUAGE_META).map(([value, meta]) => (
+              <option key={value} value={value}>{meta.label}</option>
+            ))}
+          </select>
         </div>
       </header>
- 
-      {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-gray-950 text-white">
-        {/* German flag stripe accent — top of section */}
-        <div className="flex h-1.5 w-full">
-          {flagStripes.map((c) => <div key={c} className={`flex-1 ${c}`} />)}
-        </div>
- 
-        {/* Subtle grid background */}
-        <div className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px)", backgroundSize: "40px 40px" }}
-        />
- 
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 py-24 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
-            {t.whyGermanBadge}
-          </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight mb-6">
-            {t.whyGermanTitle}
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            {t.whyGermanSubtitle}
-          </p>
-          <div className="mt-10 flex flex-wrap gap-3 justify-center">
-            <Button onClick={() => router.push("/auth")} size="lg"
-              className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-xl px-8">
-              {t.whyGermanPrimaryCta}
-            </Button>
-            <Button onClick={() => router.push("/#courses")} size="lg" variant="outline"
-              className="border-white/20 text-white hover:bg-white/10 rounded-xl px-8 bg-transparent">
-              {t.whyGermanCtaSecondary}
-            </Button>
-          </div>
-        </div>
- 
-        {/* German flag stripe accent — bottom of section */}
-        <div className="flex h-1.5 w-full">
-          {flagStripes.map((c) => <div key={c} className={`flex-1 ${c}`} />)}
-        </div>
-      </section>
- 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6">
- 
-        {/* ── Reasons grid ── */}
-        <section className="py-20">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-              {t.whyGermanReasonsTitle}
-            </h2>
-            <div className="mt-3 mx-auto w-16 h-1 rounded-full bg-yellow-400" />
-          </div>
- 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {reasons.map((reason, i) => (
-              <div key={i}
-                className="group relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                {/* Colored top border on hover */}
-                <div className={`absolute top-0 left-6 right-6 h-0.5 rounded-full ${reason.color} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
- 
-                <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl ${reason.color} text-white mb-4`}>
-                  {reason.icon}
-                </div>
- 
-                <Badge variant="secondary" className="mb-3 text-xs font-semibold">
-                  {reason.stats}
-                </Badge>
- 
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{reason.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{reason.description}</p>
-              </div>
-            ))}
-          </div>
-        </section>
- 
-        {/* ── Industries ── */}
-        <section className="py-16 border-t border-gray-100">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">{t.whyGermanIndustriesTitle}</h2>
-            <div className="mt-3 mx-auto w-16 h-1 rounded-full bg-red-600" />
-          </div>
- 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {industries.map((industry, i) => (
-              <div key={i}
-                className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors text-center">
-                <div className="w-10 h-10 rounded-xl bg-gray-900 flex items-center justify-center">
-                  <Briefcase className="w-5 h-5 text-yellow-400" />
-                </div>
-                <p className="text-xs font-semibold text-gray-700 leading-snug">{industry}</p>
-              </div>
-            ))}
-          </div>
-        </section>
- 
-        {/* ── Testimonials ── */}
-        <section className="py-16 border-t border-gray-100">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">{t.whyGermanTestimonialsTitle}</h2>
-            <div className="mt-3 mx-auto w-16 h-1 rounded-full bg-gray-900" />
-          </div>
- 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, i) => (
-              <div key={i} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm flex flex-col gap-4">
-                {/* Quote mark */}
-                <span className="text-5xl leading-none text-gray-200 font-serif select-none">"</span>
-                <p className="text-gray-600 text-sm leading-relaxed -mt-4 flex-1">
-                  {testimonial.content}
-                </p>
-                <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
-                  <div className="w-10 h-10 rounded-full bg-gray-900 text-yellow-400 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{testimonial.name}</p>
-                    <p className="text-xs text-gray-500">{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
- 
-        {/* ── CTA Banner ── */}
-        <section className="py-16 border-t border-gray-100 pb-24">
-          <div className="rounded-3xl bg-gray-950 text-white overflow-hidden relative">
-            <div className="flex h-1.5 w-full absolute top-0">
-              {flagStripes.map((c) => <div key={c} className={`flex-1 ${c}`} />)}
-            </div>
-            <div className="px-8 py-14 text-center">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-                Bereit anzufangen?
-              </h2>
-              <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-                {t.whyGermanSubtitle}
+
+      <main>
+
+        {/* ── Wer bin ich ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-20 sm:pt-20 sm:pb-28">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-14 md:gap-10 items-start">
+            <div className="md:col-span-7 md:pt-6">
+              <p className={`${hand.className} ${BRAND_RED} text-3xl -rotate-2 origin-left`}>
+                {t.aboutMeTitle}
               </p>
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Button onClick={() => router.push("/auth")} size="lg"
-                  className="bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold rounded-xl px-8">
-                  {t.whyGermanPrimaryCta}
-                </Button>
-                <Button onClick={() => router.push("/#courses")} size="lg" variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 rounded-xl px-8 bg-transparent">
-                  {t.whyGermanCtaSecondary}
-                </Button>
+              <h1 className={`${serif.className} mt-3 text-4xl sm:text-5xl leading-[1.15] font-semibold text-stone-900`}>
+                {t.aboutGreeting}
+              </h1>
+              <div className="mt-8 space-y-5 text-lg leading-relaxed text-stone-600 max-w-xl">
+                <p>{t.aboutMeBio1}</p>
+                <p>{t.aboutMeBio2}</p>
               </div>
+            </div>
+
+            {/* Photos, pinned like prints */}
+            <div className="md:col-span-5 relative mx-auto w-full max-w-sm md:max-w-none">
+              <figure className="relative z-10 w-[78%] rotate-2 bg-white p-3 pb-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]">
+                <Tape className="-top-3 left-1/2 -translate-x-1/2 -rotate-3" />
+                <div className="relative aspect-[4/5] bg-stone-100">
+                  <Image src={TEACHER_PHOTO} alt={t.aboutPhotoCaption} fill sizes="320px" className="object-cover" />
+                </div>
+                <figcaption className={`${hand.className} mt-3 text-center text-2xl text-stone-700`}>
+                  {t.aboutPhotoCaption}
+                </figcaption>
+              </figure>
+              <figure className="absolute right-0 top-[52%] z-20 w-[46%] rotate-[5deg] bg-white p-2 pb-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]">
+                <Tape className="-top-3 right-4 rotate-6 w-16" />
+                <div className="relative aspect-square bg-stone-100">
+                  <Image src={SIDE_PHOTO.src} alt={SIDE_PHOTO.caption} fill sizes="200px" className="object-cover" />
+                </div>
+                <figcaption className={`${hand.className} mt-2 text-center text-lg text-stone-600`}>
+                  {SIDE_PHOTO.caption}
+                </figcaption>
+              </figure>
             </div>
           </div>
         </section>
- 
+
+        {/* ── Woher kommt der Name ── */}
+        <section className="border-y border-stone-200 bg-white">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-20 text-center">
+            <h2 className={`${serif.className} text-2xl sm:text-3xl font-semibold text-stone-900`}>{t.aboutTitle}</h2>
+            <p className='mt-8 font-["Gummy_Twist"] text-5xl sm:text-7xl leading-none text-stone-900'>
+              <span className={BRAND_RED}>Deutsch</span>
+              <span className="mx-3 text-stone-400">+</span>
+              erei
+            </p>
+            <p className="mt-8 text-lg leading-relaxed text-stone-600">{t.aboutNameText}</p>
+          </div>
+        </section>
+
+        {/* ── So arbeite ich ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24">
+          <h2 className={`${serif.className} text-3xl sm:text-4xl font-semibold text-stone-900`}>{t.aboutApproachTitle}</h2>
+          <ol className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+            {approach.map((item, i) => (
+              <li key={item.title} className="border-t-2 border-stone-900 pt-5">
+                <span className={`${serif.className} ${BRAND_RED} text-xl font-semibold`}>{i + 1}.</span>
+                <h3 className="mt-2 text-lg font-semibold text-stone-900">{item.title}</h3>
+                <p className="mt-2 leading-relaxed text-stone-600">{item.text}</p>
+              </li>
+            ))}
+          </ol>
+
+          <blockquote className="mt-20 max-w-3xl mx-auto text-center">
+            <p className={`${serif.className} text-2xl sm:text-3xl italic leading-snug text-stone-800`}>
+              „{t.aboutQuote}“
+            </p>
+          </blockquote>
+        </section>
+
+        {/* ── Kurse ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+          <h2 className={`${serif.className} text-3xl sm:text-4xl font-semibold text-stone-900`}>{t.aboutOfferTitle}</h2>
+          <ul className="mt-10 divide-y divide-stone-200 border-y border-stone-200">
+            {offers.map((offer) => (
+              <li key={offer.href}>
+                <Link
+                  href={offer.href}
+                  className="group grid grid-cols-[1fr_auto] sm:grid-cols-[minmax(0,2fr)_minmax(0,3fr)_auto] items-center gap-x-6 gap-y-1 py-6 px-2 transition-colors hover:bg-white focus:outline-none focus:bg-white"
+                >
+                  <span className={`${serif.className} text-xl font-semibold text-stone-900`}>{offer.title}</span>
+                  <span className="col-start-1 row-start-2 sm:col-start-auto sm:row-start-auto text-stone-500">{offer.text}</span>
+                  <span className="row-span-2 sm:row-span-1 col-start-2 row-start-1 sm:col-start-auto sm:row-start-auto inline-flex items-center gap-1.5 text-sm font-medium text-stone-900">
+                    <span className="hidden sm:inline">{t.aboutLearnMore}</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ── Warum Deutsch ── */}
+        <section className="border-t border-stone-200 bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-24 grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div>
+              <h2 className={`${serif.className} text-3xl sm:text-4xl font-semibold text-stone-900`}>{t.aboutWhyTitle}</h2>
+              <p className="mt-4 text-stone-600 leading-relaxed">{t.aboutWhyIntro}</p>
+            </div>
+            <dl className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-8">
+              {reasons.map((reason) => (
+                <div key={reason.title}>
+                  <dt className="font-semibold text-stone-900">{reason.title}</dt>
+                  <dd className="mt-1.5 text-sm leading-relaxed text-stone-500">{reason.text}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+
+        {/* ── Kontakt ── */}
+        <section className="border-t border-stone-200">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 py-20 sm:py-24 text-center">
+            <h2 className={`${serif.className} text-3xl sm:text-4xl font-semibold text-stone-900`}>{t.aboutContactTitle}</h2>
+            <p className="mt-5 text-lg leading-relaxed text-stone-600">{t.aboutContactText}</p>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-6 inline-block text-lg font-medium text-stone-900 underline decoration-[#D10026] decoration-2 underline-offset-4 hover:text-[#D10026] break-all"
+            >
+              {CONTACT_EMAIL}
+            </a>
+            <p className={`${hand.className} ${BRAND_RED} mt-10 text-4xl -rotate-2`}>{t.aboutSignature}</p>
+            <div className="mt-12 flex flex-wrap justify-center gap-3">
+              <Button onClick={() => router.push("/auth")} size="lg" className="rounded-md bg-stone-900 px-7 text-white hover:bg-stone-700">
+                {t.whyGermanPrimaryCta}
+              </Button>
+              <Button onClick={() => router.push("/reviews")} size="lg" variant="outline" className="rounded-md border-stone-300 bg-transparent px-7 text-stone-800 hover:bg-white">
+                {t.reviewsBadge}
+              </Button>
+            </div>
+          </div>
+        </section>
+
       </main>
     </div>
   )
-
 }
