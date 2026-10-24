@@ -1,22 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Calendar, Clock, GraduationCap, Users } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
 import { useLanguage } from "@/hooks/use-language"
-import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
-import { TranslationDictionary } from "@/lib/i18n"
+import { translations } from "@/lib/i18n"
+import { BRAND_RED, PAPER_BG, PRINT_SHADOW, PageIntro, PaperHeader, Tape, hand, serif } from "@/components/paper"
 
 const GROUP_SCHEDULE_KEYS = [
   "offersGroupA1",
@@ -25,147 +15,115 @@ const GROUP_SCHEDULE_KEYS = [
   "offersGroupB2",
 ] as const
 
+// "A1: Anfängergruppen …" -> ["A1", "Anfängergruppen …"]
+function splitLevel(line: string) {
+  const index = line.indexOf(":")
+  if (index === -1) return [null, line] as const
+  return [line.slice(0, index).trim(), line.slice(index + 1).trim()] as const
+}
+
 export default function OffersPage() {
   const router = useRouter()
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
   const t = translations[language]
-  const [openItem, setOpenItem] = useState<string>("group")
 
-  useEffect(() => {
-    const hash = window.location.hash.replace("#", "")
-    if (hash === "group" || hash === "individual" || hash === "exam-prep") {
-      setOpenItem(hash)
-    }
-  }, [])
+  const individualLines = [t.offersIndividualLowerLevels, t.offersIndividualHigherLevels]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-              <Image
-                src="/deutschereiLogo.png"
-                alt={`${t.appName} logo`}
-                width={100}
-                height={35}
-                className="h-[35px] w-auto max-w-none shrink-0"
-                priority
-              />
-            </Link>
-            <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.offersPageBackToHome}</span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-3">
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as Language)}
-              className="h-9 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-700"
-              aria-label={t.language}
-            >
-              {Object.entries(LANGUAGE_META).map(([value, meta]) => (
-                <option key={value} value={value}>
-                  {meta.label}
-                </option>
-              ))}
-            </select>
-            <Button onClick={() => router.push("/auth")} className="hidden sm:inline-flex bg-blue-600 hover:bg-blue-700">
-              {t.offersPageCta}
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className={`min-h-screen ${PAPER_BG} text-stone-800`}>
+      <PaperHeader active="offers" />
 
-      <nav className="border-b border-gray-200 bg-white" aria-label="Page navigation">
-        <div className="mx-auto flex max-w-7xl justify-center gap-8 px-4 py-3 text-sm font-semibold text-gray-700">
-          <Link href="/offers" className="text-blue-600">{t.courses}</Link>
-          <Link href="/events" className="hover:text-blue-600">{t.events}</Link>
-          <Link href="/reviews" className="hover:text-blue-600">{t.reviewsBadge}</Link>
-        </div>
-      </nav>
+      <main>
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-16 sm:pt-20">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
+            <div className="md:col-span-8">
+              <PageIntro note={t.offersPageNote} title={t.offersPageTitle} text={t.offersPageSubtitle} />
+            </div>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
-        <section className="text-center mb-10">
-          <Badge className="mb-4 px-4 py-2 text-sm font-semibold">{t.offersPageBadge}</Badge>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{t.offersPageTitle}</h1>
-          <p className="text-lg text-gray-600">{t.offersPageSubtitle}</p>
+            {/* Sticky note */}
+            <aside className="md:col-span-4 mx-auto w-full max-w-xs">
+              <div className={`relative rotate-2 bg-yellow-100 px-6 pt-8 pb-6 ${PRINT_SHADOW}`}>
+                <Tape className="-top-3 left-1/2 -translate-x-1/2 -rotate-2 bg-white/60" />
+                <p className={`${hand.className} text-2xl font-bold text-stone-900`}>{t.offersNoteTitle}</p>
+                <p className={`${hand.className} mt-2 text-xl leading-snug text-stone-700`}>{t.offersGroupSeasonNote}</p>
+              </div>
+            </aside>
+          </div>
         </section>
 
-        <Card className="shadow-md border-gray-200">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t.offersTrainingSection}</h2>
-            <Accordion
-              type="single"
-              collapsible
-              value={openItem}
-              onValueChange={(value) => setOpenItem(value)}
-              className="w-full"
-            >
-              <AccordionItem value="group">
-                <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline">
-                  <span className="flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-600" />
-                    {t.offersGroupTitle}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-gray-600 mb-4">{t.offersGroupIntro}</p>
-                  <ul className="space-y-2">
-                    {GROUP_SCHEDULE_KEYS.map((key) => (
-                      <li key={key} className="flex items-start gap-2 text-sm text-gray-700">
-                        <Clock className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-                        {t[key]}
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+          {/* 1. Group */}
+          <section id="group" className="scroll-mt-28 border-t-2 border-stone-900 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-4">
+              <span className={`${serif.className} ${BRAND_RED} text-xl font-semibold`}>1.</span>
+              <h2 className={`${serif.className} mt-1 text-3xl font-semibold text-stone-900`}>{t.offersGroupTitle}</h2>
+              <p className="mt-3 leading-relaxed text-stone-600">{t.offersGroupIntro}</p>
+              <Link href="/courses/group" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-[#D10026]">
+                {t.readMore} <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <ul className="lg:col-span-8 divide-y divide-stone-200 border-y border-stone-200 bg-white">
+              {GROUP_SCHEDULE_KEYS.map((key) => {
+                const [level, text] = splitLevel(t[key])
+                return (
+                  <li key={key} className="grid grid-cols-[4rem_1fr] gap-4 px-5 py-4">
+                    <span className={`${serif.className} text-xl font-semibold text-stone-900`}>{level}</span>
+                    <span className="text-stone-600 leading-relaxed">{text}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
 
-              <AccordionItem value="individual">
-                <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline">
-                  <span className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-green-600" />
-                    {t.offersIndividualTitle}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-2 text-sm text-gray-700">
-                      <Clock className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                      {t.offersIndividualLowerLevels}
+          {/* 2. Individual */}
+          <section id="individual" className="scroll-mt-28 border-t-2 border-stone-900 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-4">
+              <span className={`${serif.className} ${BRAND_RED} text-xl font-semibold`}>2.</span>
+              <h2 className={`${serif.className} mt-1 text-3xl font-semibold text-stone-900`}>{t.offersIndividualTitle}</h2>
+              <Link href="/courses/individual" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-[#D10026]">
+                {t.readMore} <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <div className="lg:col-span-8">
+              <ul className="divide-y divide-stone-200 border-y border-stone-200 bg-white">
+                {individualLines.map((line) => {
+                  const [level, text] = splitLevel(line)
+                  return (
+                    <li key={line} className="grid grid-cols-[4rem_1fr] gap-4 px-5 py-4">
+                      <span className={`${serif.className} text-lg font-semibold text-stone-900`}>{level}</span>
+                      <span className="text-stone-600 leading-relaxed">{text}</span>
                     </li>
-                    <li className="flex items-start gap-2 text-sm text-gray-700">
-                      <Clock className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                      {t.offersIndividualHigherLevels}
-                    </li>
-                    <li className="flex items-start gap-2 text-sm text-gray-600 italic">
-                      <Calendar className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                      {t.offersIndividualCalendarNote}
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+                  )
+                })}
+              </ul>
+              <p className="mt-4 text-sm italic text-stone-500">{t.offersIndividualCalendarNote}</p>
+            </div>
+          </section>
 
-              <AccordionItem value="exam-prep">
-                <AccordionTrigger className="text-base font-semibold text-gray-900 hover:no-underline">
-                  <span className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-purple-600" />
-                    {t.offersExamPrepTitle}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <p className="text-sm text-gray-700">{t.offersExamPrepDescription}</p>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </CardContent>
-        </Card>
+          {/* 3. Exam prep */}
+          <section id="exam-prep" className="scroll-mt-28 border-t-2 border-stone-900 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-4">
+              <span className={`${serif.className} ${BRAND_RED} text-xl font-semibold`}>3.</span>
+              <h2 className={`${serif.className} mt-1 text-3xl font-semibold text-stone-900`}>{t.offersExamPrepTitle}</h2>
+              <Link href="/courses/exam-prep" className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900 underline decoration-stone-300 underline-offset-4 hover:decoration-[#D10026]">
+                {t.readMore} <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            <p className="lg:col-span-8 text-lg leading-relaxed text-stone-600">{t.offersExamPrepDescription}</p>
+          </section>
 
-        <p className="mt-6 text-center text-sm text-gray-600 bg-white/70 rounded-xl border border-gray-200 px-4 py-3">
-          {t.offersGroupSeasonNote}
-        </p>
+          <div className="border-t border-stone-200 pt-14 text-center">
+            <p className={`${hand.className} ${BRAND_RED} text-4xl -rotate-2`}>{t.aboutSignature}</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button onClick={() => router.push("/auth")} size="lg" className="rounded-md bg-stone-900 px-7 text-white hover:bg-stone-700">
+                {t.offersPageCta}
+              </Button>
+              <Button onClick={() => router.push("/why-learn-german")} size="lg" variant="outline" className="rounded-md border-stone-300 bg-transparent px-7 text-stone-800 hover:bg-white">
+                {t.aboutMeTitle}
+              </Button>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   )

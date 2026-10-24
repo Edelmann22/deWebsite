@@ -1,7 +1,9 @@
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, CalendarDays, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { cookies } from "next/headers"
+import { PaperHeader } from "@/components/paper"
+import { BRAND_RED, PAPER_BG, PRINT_SHADOW, hand, serif } from "@/components/paper-fonts"
 import sql, { type EventRow } from "@/lib/db"
 import { LIGHT_EVENT_COLUMNS, withMediaUrls } from "@/lib/event-media"
 import { getEventCategoryLabel, normalizeEventCategory } from "@/lib/event-categories"
@@ -56,74 +58,64 @@ export default async function EventPage({ params }: Props) {
   const images = Array.isArray(event.images) ? event.images : []
   const categoryLabel = getEventCategoryLabel(event.category, t)
 
+  const category = normalizeEventCategory(event.category)
+
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-12">
+    <div className={`min-h-screen ${PAPER_BG} text-stone-800`}>
+      <PaperHeader active="events" />
+
+      <main className="mx-auto max-w-3xl px-4 pt-10 pb-24 sm:px-6 sm:pt-14">
         <Link
-          href={`/events/${normalizeEventCategory(event.category) === "events" ? "" : normalizeEventCategory(event.category)}`}
-          className="mb-6 inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-colors hover:bg-gray-100"
+          href={`/events/${category === "events" ? "" : category}`}
+          className="inline-flex items-center gap-2 text-sm font-medium text-stone-500 transition-colors hover:text-stone-900"
         >
           <ArrowLeft size={16} />
           {t.eventBackToEvents}
         </Link>
 
-        <article className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <article className="mt-8">
+          <p className={`${hand.className} ${BRAND_RED} text-2xl -rotate-1 origin-left`}>
+            {categoryLabel}
+            {event.event_date && <> · {formatEventDate(event.event_date, locale)}</>}
+          </p>
+          <h1 className={`${serif.className} mt-2 text-4xl sm:text-5xl leading-[1.15] font-semibold text-stone-900`}>
+            {event.title}
+          </h1>
+          <p className="mt-4 text-sm text-stone-500">
+            {t.eventPosted} {formatPostedDate(event.created_at, locale)}
+            {images.length > 0 && <> · {images.length} {images.length === 1 ? t.eventPhoto : t.eventPhotos}</>}
+          </p>
+
           {images.length > 0 && (
-            <div className="bg-gray-100">
+            <figure className={`relative mt-10 -rotate-1 bg-white p-3 pb-4 ${PRINT_SHADOW}`}>
+              <div aria-hidden className="absolute -top-3 left-1/2 h-6 w-28 -translate-x-1/2 rotate-2 bg-yellow-200/70 shadow-sm" />
               <img src={images[0]} alt={event.title} className="max-h-[520px] w-full object-cover" />
-            </div>
+            </figure>
           )}
 
-          <div className="px-5 py-6 sm:px-8 sm:py-8">
-            <div className="mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600">
-              {categoryLabel && (
-                <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700">
-                  {categoryLabel}
-                </span>
-              )}
-              {event.event_date && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 font-medium text-blue-700">
-                  <CalendarDays size={15} />
-                  {formatEventDate(event.event_date, locale)}
-                </span>
-              )}
-              <span>{t.eventPosted} {formatPostedDate(event.created_at, locale)}</span>
-              {images.length > 0 && (
-                <span className="inline-flex items-center gap-1.5">
-                  <ImageIcon size={15} />
-                  {images.length} {images.length === 1 ? t.eventPhoto : t.eventPhotos}
-                </span>
-              )}
-            </div>
-
-            <h1 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl">{event.title}</h1>
-
-            <div
-              className="event-content mt-6 max-w-none text-[17px] leading-relaxed text-gray-800"
-              dangerouslySetInnerHTML={{ __html: event.content_html }}
-            />
-          </div>
+          <div
+            className="event-content mt-10 max-w-none text-[17px] leading-relaxed text-stone-700"
+            dangerouslySetInnerHTML={{ __html: event.content_html }}
+          />
 
           {images.length > 1 && (
-            <div className="border-t border-gray-200 px-5 py-6 sm:px-8">
-              <div className="grid gap-3 sm:grid-cols-2">
-                {images.slice(1).map((src, index) => (
-                  <div
-                    key={`${event.id}-image-${index + 2}`}
-                    className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100"
-                  >
-                    <img
-                      src={src}
-                      alt={`${event.title} image ${index + 2}`}
-                      className="h-full max-h-80 w-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
+            <div className="mt-14 grid gap-8 sm:grid-cols-2">
+              {images.slice(1).map((src, index) => (
+                <figure
+                  key={`${event.id}-image-${index + 2}`}
+                  className={`bg-white p-2 pb-3 ${PRINT_SHADOW} ${index % 2 === 0 ? "rotate-1" : "-rotate-1"}`}
+                >
+                  <img
+                    src={src}
+                    alt={`${event.title} image ${index + 2}`}
+                    className="h-full max-h-80 w-full object-cover"
+                  />
+                </figure>
+              ))}
             </div>
           )}
         </article>
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }

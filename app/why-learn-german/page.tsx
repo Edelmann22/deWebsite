@@ -3,34 +3,20 @@
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { Lora, Caveat } from "next/font/google"
-import { ArrowLeft, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { BRAND_RED, PAPER_BG, PaperHeader, Tape, hand, serif } from "@/components/paper"
 import { useLanguage } from "@/hooks/use-language"
-import { LANGUAGE_META, type Language, translations } from "@/lib/i18n"
-
-const serif = Lora({ subsets: ["latin", "cyrillic"], display: "swap" })
-const hand = Caveat({ subsets: ["latin", "cyrillic"], weight: ["500", "700"], display: "swap" })
+import { translations } from "@/lib/i18n"
 
 // TODO: replace with a real portrait (e.g. drop /teacher.jpg into /public).
-const TEACHER_PHOTO = "/placeholder-user.jpg"
+const TEACHER_PHOTO = "/random-person.png"
 const SIDE_PHOTO = { src: "/Ph5.jpg", caption: "Neuschwanstein" }
 const CONTACT_EMAIL = "rosi_vasseva@abv.bg"
 
-const BRAND_RED = "text-[#D10026]"
-
-function Tape({ className = "" }: { className?: string }) {
-  return (
-    <div
-      aria-hidden
-      className={`absolute h-6 w-24 bg-yellow-200/70 shadow-sm ${className}`}
-    />
-  )
-}
-
 export default function AboutPage() {
   const router = useRouter()
-  const { language, setLanguage } = useLanguage()
+  const { language } = useLanguage()
   const t = translations[language]
 
   const approach = [
@@ -55,40 +41,8 @@ export default function AboutPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#FBF7F0] text-stone-800">
-
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-40 border-b border-stone-200 bg-[#FBF7F0]/90 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2 text-stone-500 hover:text-stone-900 transition-colors text-sm font-medium">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.whyGermanBackToHome}</span>
-            </Link>
-            <div className="h-4 w-px bg-stone-300" />
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/deutschereiLogo.png"
-                alt={`${t.appName} logo`}
-                width={100}
-                height={35}
-                className="h-[35px] w-auto max-w-none shrink-0"
-                priority
-              />
-            </Link>
-          </div>
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as Language)}
-            className="h-8 rounded-md border border-stone-300 bg-white px-3 text-sm text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-300"
-            aria-label={t.language}
-          >
-            {Object.entries(LANGUAGE_META).map(([value, meta]) => (
-              <option key={value} value={value}>{meta.label}</option>
-            ))}
-          </select>
-        </div>
-      </header>
+    <div className={`min-h-screen ${PAPER_BG} text-stone-800`}>
+      <PaperHeader />
 
       <main>
 

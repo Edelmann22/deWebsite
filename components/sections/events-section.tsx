@@ -1,16 +1,12 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
-import { CalendarDays, ArrowRight } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { BRAND_RED, hand, serif } from "@/components/paper"
 import type { TranslationDictionary } from "@/lib/i18n"
 import type { EventRow } from "@/lib/db"
-import { useState  } from "react"
-
-
 
 interface EventsSectionProps {
   events: EventRow[]
@@ -18,40 +14,36 @@ interface EventsSectionProps {
   onViewEventDetails: (eventId: number) => void
   t: TranslationDictionary
   locale: string
-  // Heading above the cards; defaults to the generic events title.
+  // Heading above the list; omitted when the page already has one.
   title?: string
   // How many events to show; undefined shows all of them.
   limit?: number
 }
 
+function extractTextFromHtml(html: string) {
+  const doc = new DOMParser().parseFromString(html, "text/html")
+  return (doc.body.textContent ?? "").replace(/\s+/g, " ").trim()
+}
+
+function formatEventDate(dateString: string | null | undefined, locale: string) {
+  if (!dateString) return null
+  return new Date(dateString + "T12:00:00").toLocaleDateString(locale, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })
+}
+
 export default function EventsSection({ events, eventsLoading, onViewEventDetails, t, locale, title, limit }: EventsSectionProps) {
   const router = useRouter()
-  
   const [loadingEventId, setLoadingEventId] = useState<number | null>(null)
 
-    const handleEventClick = (eventId: number) => 
-    {
-        setLoadingEventId(eventId)
-        router.push(`/events/${eventId}`)
-    }
-  
-  // Helper function to extract text from HTML
-  function extractTextFromHtml(html: string) {
-    const doc = new DOMParser().parseFromString(html, "text/html")
-    return (doc.body.textContent ?? "").replace(/\s+/g, " ").trim()
+  const handleEventClick = (eventId: number) => {
+    setLoadingEventId(eventId)
+    router.push(`/events/${eventId}`)
   }
 
-  // Helper function to format event date
-  function formatEventDate(dateString: string, locale: string) {
-    if (!dateString) return null
-    return new Date(dateString + "T12:00:00").toLocaleDateString(locale, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  }
-
-  // Sort events by creation date (most recent first)
+  // Most recent first
   const sortedEvents = useMemo(
     () => [...events].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()),
     [events],
@@ -66,120 +58,85 @@ export default function EventsSection({ events, eventsLoading, onViewEventDetail
   )
 
   return (
-    <section id="events" className="py-16 bg-gray-50">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">{title ?? t.eventsTitle}</h2>
+    <section id="events" className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24">
+      {title && (
+        <h2 className={`${serif.className} mt-10 text-3xl sm:text-4xl font-semibold text-stone-900`}>{title}</h2>
+      )}
+
+      {eventsLoading ? (
+        <p className={`${hand.className} py-20 text-center text-2xl text-stone-500`}>{t.eventsLoading}</p>
+      ) : sortedEvents.length === 0 ? (
+        <div className="py-20 text-center">
+          <p className={`${serif.className} text-2xl font-semibold text-stone-900`}>{t.eventsEmpty}</p>
+          <p className={`${hand.className} mt-3 text-2xl text-stone-500`}>{t.aboutSignature}</p>
         </div>
-
-        {eventsLoading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-gray-600">{t.eventsLoading}</p>
-          </div>
-        ) : sortedEvents.length === 0 ? (
-          <div className="text-center py-12">
-            <CalendarDays className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t.eventsEmpty}</h3>
-            <p className="text-gray-600">{t.eventsSubtitle}</p>
-          </div>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedEvents.slice(0, limit ?? sortedEvents.length).map((event) => (
-              <Card
-                key={event.id} 
-                className="relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 hover:border-blue-300"
-                onClick={() => handleEventClick(event.id)}
-              >
-                {/* Loading overlay */}
-                {loadingEventId === event.id && (
-                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-sm rounded-inherit">
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="h-7 w-7 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900"/>
-                            <span className="text-xs text-gray-500 font-medium">{t.eventsLoading}</span>
-                        </div>
-                    </div>
-                )}
-
-                {event.images && event.images.length > 0 && (
-                  <div className="aspect-video overflow-hidden bg-gray-100">
-                    <img
-                      src={event.images[0]}
-                      alt={event.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+      ) : (
+        <ul className="divide-y divide-stone-200">
+          {sortedEvents.slice(0, limit ?? sortedEvents.length).map((event, index) => {
+            const image = event.images?.[0]
+            const date = formatEventDate(event.event_date, locale)
+            return (
+              <li key={event.id}>
+                <button
+                  type="button"
+                  onClick={() => handleEventClick(event.id)}
+                  className="group grid w-full grid-cols-1 sm:grid-cols-[9rem_1fr_auto] gap-x-8 gap-y-3 py-10 text-left focus:outline-none focus-visible:bg-white"
+                >
+                  <div className="sm:pt-1.5">
+                    <p className={`${hand.className} ${BRAND_RED} text-2xl leading-tight`}>
+                      {date ?? new Date(event.created_at).toLocaleDateString(locale, { month: "long", day: "numeric" })}
+                    </p>
                   </div>
-                )}
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {formatEventDate(event.event_date || "", locale) || t.eventDate}
-                    </Badge>
-                    <span className="text-xs text-gray-500">
-                      {new Date(event.created_at).toLocaleDateString(locale, {
-                        month: "short",
-                        day: "numeric"
-                      })}
+
+                  <div className="min-w-0">
+                    <h3 className={`${serif.className} text-2xl sm:text-[1.7rem] leading-snug font-semibold text-stone-900 group-hover:underline decoration-[#D10026] decoration-2 underline-offset-4`}>
+                      {event.title}
+                    </h3>
+                    {eventPreviews[event.id] && (
+                      <p className="mt-3 line-clamp-3 leading-relaxed text-stone-600">{eventPreviews[event.id]}</p>
+                    )}
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-stone-900">
+                      {loadingEventId === event.id ? t.eventsLoading : t.readMore}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </span>
                   </div>
-                  <CardTitle className="text-xl line-clamp-2 group-hover:text-yellow-600 transition-colors flex items-start justify-between gap-2">
-                    <span>{event.title}</span>
-                    <ArrowRight size={16} className="opacity-0 group-hover:opacity-100 transition-opacity text-yellow-600 flex-shrink-0 mt-1" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <CardDescription className="line-clamp-3 mb-4">
-                    {eventPreviews[event.id]}
-                  </CardDescription>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                      {event.images && event.images.length > 0 && (
-                        <span className="flex items-center gap-1">
-                          📷 {event.images.length} {event.images.length === 1 ? t.eventPhoto : t.eventPhotos}
-                        </span>
-                      )}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-0 h-auto hover:text-white hover:bg-yellow-400 rounded-md px-2 py-1 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleEventClick(event.id)
-                      }}
+
+                  {image && (
+                    <div
+                      className={`order-first sm:order-none w-full sm:w-52 bg-white p-2 pb-3 shadow-[0_8px_24px_-10px_rgba(0,0,0,0.3)] transition-transform duration-300 group-hover:rotate-0 ${
+                        index % 2 === 0 ? "sm:rotate-2" : "sm:-rotate-2"
+                      }`}
                     >
-                      <span className="flex items-center gap-1 hover:text-white">
-                        {loadingEventId === event.id ? (
-                            <div className="h-3.5 w-3.5 animate-spin rounded-full border border-gray-400 border-t-gray-900" />
-                        ) : (
-                            <>{t.readMore}<ArrowRight size={14} /></>
-                        )
-                    }
-                      </span>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                      <div className="aspect-[4/3] overflow-hidden bg-stone-100">
+                        <img src={image} alt={event.title} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                      </div>
+                      {event.images.length > 1 && (
+                        <p className={`${hand.className} mt-1.5 text-center text-lg text-stone-500`}>
+                          +{event.images.length - 1} {event.images.length - 1 === 1 ? t.eventPhoto : t.eventPhotos}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
 
-        {limit !== undefined && sortedEvents.length > limit && (
-          <div className="text-center mt-12">
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="rounded-full px-8"
-              onClick={() => onViewEventDetails(-1)} // Special signal to show all events
-            >
-              {t.viewAllEvents}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
+      {limit !== undefined && sortedEvents.length > limit && (
+        <div className="text-center mt-12">
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-md border-stone-300 bg-transparent px-7 text-stone-800 hover:bg-white"
+            onClick={() => onViewEventDetails(-1)} // Special signal to show all events
+          >
+            {t.viewAllEvents}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      )}
     </section>
   )
 }

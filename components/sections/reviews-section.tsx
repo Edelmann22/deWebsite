@@ -1,14 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Star, MessageSquare, User, Calendar, Trash2 } from "lucide-react"
+import { Star, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { BRAND_RED, hand, serif } from "@/components/paper-fonts"
 import type { TranslationDictionary } from "@/lib/i18n"
 import type { ReviewRow, SessionUser } from "@/lib/db"
 
@@ -135,12 +132,12 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
 
   const renderStars = (rating: number, interactive = false, onRatingChange?: (rating: number) => void) => {
     return (
-      <div className="flex gap-1">
+      <div className="flex gap-0.5" aria-label={`${rating}/5`}>
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`w-5 h-5 ${star <= rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} ${
-              interactive ? "cursor-pointer hover:text-yellow-400" : ""
+            className={`${interactive ? "w-7 h-7" : "w-4 h-4"} ${star <= rating ? "fill-amber-400 text-amber-400" : "text-stone-300"} ${
+              interactive ? "cursor-pointer hover:text-amber-400" : ""
             }`}
             onClick={() => interactive && onRatingChange && onRatingChange(star)}
           />
@@ -149,194 +146,151 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
     )
   }
 
-  const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+  const averageRating = reviews.length
+    ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
+    : 0
+
+  // Notes pinned at slightly different angles
+  const tilts = ["md:-rotate-1", "md:rotate-[0.6deg]", "md:-rotate-[0.4deg]", "md:rotate-1"]
 
   return (
-    <section id="reviews" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <Badge variant="secondary" className="mb-4 px-4 py-2 text-sm font-semibold">
-            {t.reviewsBadge}
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+    <section id="reviews" className="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-24 sm:pt-20">
+      {/* Intro + rating */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-end">
+        <div className="md:col-span-8 max-w-2xl">
+          <p className={`${hand.className} ${BRAND_RED} text-3xl -rotate-2 origin-left`}>{t.reviewsPageNote}</p>
+          <h1 className={`${serif.className} mt-3 text-4xl sm:text-5xl leading-[1.15] font-semibold text-stone-900`}>
             {t.reviewsTitle}
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            {t.reviewsSubtitle}
-          </p>
-          
-          {/* Rating Summary */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="flex items-center gap-2">
-              <span className="text-4xl font-bold text-gray-900">{averageRating.toFixed(1)}</span>
+          </h1>
+          <p className="mt-6 text-lg leading-relaxed text-stone-600">{t.reviewsSubtitle}</p>
+        </div>
+        {reviews.length > 0 && (
+          <div className="md:col-span-4 md:justify-self-end flex items-center gap-4 border-l-2 border-stone-900 pl-5">
+            <span className={`${serif.className} text-5xl font-semibold text-stone-900`}>{averageRating.toFixed(1)}</span>
+            <div>
               {renderStars(Math.round(averageRating))}
+              <p className="mt-1 text-sm text-stone-500">
+                {t.reviewsAverage} · {reviews.length} {t.reviews}
+              </p>
             </div>
-            <div className="text-sm text-gray-500">
-              <div>{reviews.length} {t.reviews}</div>
-              {/*<div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <div key={rating} className="flex items-center gap-1">
-                    <span className="text-xs">{rating}</span>
-                    <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      {/*<div
-                        className="h-full bg-yellow-400"
-                        style={{
-                          width: `${(reviews.filter(r => r.rating === rating).length / reviews.length) * 100}%`
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>*/}
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {loading ? (
-            <div className="col-span-full text-center py-12">
-              <div className="text-gray-500">Loading reviews...</div>
-            </div>
-          ) : reviews.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
-              <p className="text-gray-500">Be the first to share your experience!</p>
-            </div>
-          ) : (
-            displayedReviews.map((review) => (
-            <Card key={review.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Avatar className="w-10 h-10">
-                      <AvatarFallback>
-                        <User className="w-5 h-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{review.username}</h4>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(review.created_at).toLocaleDateString(locale)}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {review.course && (
-                      <Badge variant="outline" className="text-xs">
-                        {review.course}
-                      </Badge>
-                    )}
-                    {isAdmin && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteReview(review.id)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="mb-3">
-                  {renderStars(review.rating)}
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {review.comment}
-                </p>
-              </CardContent>
-            </Card>
-            ))
-          )}
-        </div>
-
-        {/* View All Reviews Button */}
-        {limit && reviews.length > limit && (
-          <div className="text-center">
-            <Button 
-              variant="outline" 
-              size="lg"
-              onClick={() => window.location.href = "/reviews"}
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
-            >
-              {t.reviewViewAll} ({reviews.length})
-            </Button>
           </div>
         )}
+      </div>
 
-        {/* Add Review CTA */}
-        <div className="text-center">
-          {isAuthenticated ? (
-            userHasReview ? (
-              <div className="bg-gray-100 border border-gray-300 rounded-lg p-6 max-w-md mx-auto">
-                <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">{t.reviewAlreadyTitle}</h3>
-                <p className="text-gray-600 text-sm">{t.reviewAlreadyBody}</p>
-                {isAdmin && (
-                  <p className="text-gray-500 text-xs mt-2">{t.reviewAdminNote}</p>
-                )}
-              </div>
-            ) : (
-              <Dialog open={showReviewDialog} onOpenChange={(open) => {
-                if (!open || !userHasReview) {
-                  setShowReviewDialog(open)
-                }
-              }}>
-                <DialogTrigger asChild>
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    {t.leaveReview}
-                  </Button>
-                </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px]">
+      {/* Notes */}
+      <div className="mt-16">
+        {loading ? (
+          <p className={`${hand.className} py-16 text-center text-2xl text-stone-500`}>{t.reviewsLoading}</p>
+        ) : reviews.length === 0 ? (
+          <div className="py-16 text-center">
+            <p className={`${serif.className} text-2xl font-semibold text-stone-900`}>{t.reviewsEmptyTitle}</p>
+            <p className="mt-2 text-stone-500">{t.reviewsEmptyText}</p>
+          </div>
+        ) : (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-8">
+            {displayedReviews.map((review, index) => (
+              <article
+                key={review.id}
+                className={`mb-8 break-inside-avoid bg-white p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.25)] ${tilts[index % tilts.length]}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  {renderStars(review.rating)}
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteReview(review.id)}
+                      aria-label={t.deleteEvent}
+                      className="-m-1 p-1 text-stone-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <p className="mt-4 leading-relaxed text-stone-700 whitespace-pre-line">{review.comment}</p>
+                <footer className="mt-5 flex items-end justify-between gap-3 border-t border-stone-100 pt-4">
+                  <div>
+                    <p className={`${hand.className} text-2xl leading-none text-stone-900`}>{review.username}</p>
+                    {review.course && <p className="mt-1 text-xs text-stone-500">{review.course}</p>}
+                  </div>
+                  <time className="text-xs text-stone-400" dateTime={review.created_at}>
+                    {new Date(review.created_at).toLocaleDateString(locale)}
+                  </time>
+                </footer>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {limit && reviews.length > limit && (
+        <div className="text-center mt-4">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => window.location.href = "/reviews"}
+            className="rounded-md border-stone-300 bg-transparent px-7 text-stone-800 hover:bg-white"
+          >
+            {t.reviewViewAll} ({reviews.length})
+          </Button>
+        </div>
+      )}
+
+      {/* Write a review */}
+      <div className="mt-16 border-t border-stone-200 pt-14 text-center max-w-xl mx-auto">
+        {isAuthenticated ? (
+          userHasReview ? (
+            <>
+              <p className={`${serif.className} text-2xl font-semibold text-stone-900`}>{t.reviewAlreadyTitle}</p>
+              <p className="mt-2 text-stone-600">{t.reviewAlreadyBody}</p>
+              {isAdmin && <p className="mt-2 text-xs text-stone-500">{t.reviewAdminNote}</p>}
+            </>
+          ) : (
+            <Dialog open={showReviewDialog} onOpenChange={(open) => {
+              if (!open || !userHasReview) {
+                setShowReviewDialog(open)
+              }
+            }}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="rounded-md bg-stone-900 px-7 text-white hover:bg-stone-700">
+                  {t.leaveReview}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] bg-[#FBF7F0]">
                 <DialogHeader>
-                  <DialogTitle>{t.writeReview}</DialogTitle>
+                  <DialogTitle className={`${serif.className} text-2xl`}>{t.writeReview}</DialogTitle>
                 </DialogHeader>
-                
-                {/* Error Display */}
+
                 {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                    <p className="text-red-800 text-sm">{error}</p>
+                  <div className="border border-red-200 bg-red-50 p-3">
+                    <p className="text-sm text-red-800">{error}</p>
                   </div>
                 )}
-                
-                <div className="space-y-4">
+
+                <div className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t.yourRating}
-                    </label>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">{t.yourRating}</label>
                     {renderStars(newReview.rating, true, (rating) =>
                       setNewReview({ ...newReview, rating })
                     )}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t.yourComment}
-                    </label>
+                    <label className="block text-sm font-medium text-stone-700 mb-2">{t.yourComment}</label>
                     <Textarea
                       value={newReview.comment}
                       onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
                       placeholder={t.reviewPlaceholder}
-                      rows={4}
+                      rows={5}
+                      className="bg-white"
                     />
                   </div>
                   <div className="flex gap-3 justify-end">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowReviewDialog(false)}
-                    >
+                    <Button variant="outline" onClick={() => setShowReviewDialog(false)} className="rounded-md border-stone-300 bg-transparent">
                       {t.cancel}
                     </Button>
                     <Button
                       onClick={handleSubmitReview}
                       disabled={isSubmitting || !newReview.comment.trim()}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="rounded-md bg-stone-900 text-white hover:bg-stone-700"
                     >
                       {isSubmitting ? t.submitting : t.submitReview}
                     </Button>
@@ -344,22 +298,16 @@ export default function ReviewsSection({ isAuthenticated, isAdmin, user, onLogin
                 </div>
               </DialogContent>
             </Dialog>
-            )
-          ) : (
-            <div className="bg-gray-50 rounded-2xl p-8 max-w-2xl mx-auto">
-              <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {t.loginToReview}
-              </h3>
-              <p className="text-gray-600 mb-6">
-                {t.loginToReviewDescription}
-              </p>
-              <Button onClick={onLogin} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
-                {t.loginToLeaveReview}
-              </Button>
-            </div>
-          )}
-        </div>
+          )
+        ) : (
+          <>
+            <p className={`${serif.className} text-2xl font-semibold text-stone-900`}>{t.loginToReview}</p>
+            <p className="mt-2 text-stone-600">{t.loginToReviewDescription}</p>
+            <Button onClick={onLogin} size="lg" className="mt-6 rounded-md bg-stone-900 px-7 text-white hover:bg-stone-700">
+              {t.loginToLeaveReview}
+            </Button>
+          </>
+        )}
       </div>
     </section>
   )
